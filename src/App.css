@@ -1,0 +1,245 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #fefefe;
+  --text: #222222;
+  --text-muted: #666666;
+  --accent: #b8895c;
+  --border: #e8e8e8;
+  --subtle: #f8f8f6;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  font-size: 17px;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Nav */
+.nav {
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 0;
+}
+
+.nav-container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-name {
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+/* Container */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  flex: 1;
+}
+
+/* Intro */
+.intro {
+  margin-bottom: 3rem;
+}
+
+.intro-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-family: 'Lora', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 2rem;
+}
+
+.intro-text {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.intro-text strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Divider */
+.divider {
+  width: 50px;
+  height: 1px;
+  background: var(--border);
+  margin: 4rem 0;
+}
+
+/* Sections */
+h2 {
+  font-family: 'Lora', serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
+}
+
+/* Work */
+.work-item {
+  margin-bottom: 3rem;
+}
+
+.work-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.work-item h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.work-year {
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.work-item p {
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+/* Experience */
+.exp-item {
+  margin-bottom: 2rem;
+}
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.exp-header span {
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.exp-item p {
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* Contact Section */
+.contact a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact a:hover {
+  color: var(--text);
+}
+
+/* Writing Page */
+.writing-intro {
+  margin-bottom: 3rem;
+}
+
+.poem-article {
+  margin-top: 3rem;
+}
+
+.poem-content {
+  font-family: 'Lora', serif;
+  font-style: italic;
+  line-height: 2;
+  color: var(--text-muted);
+  white-space: pre-line;
+  margin: 2rem 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.poem-reflection {
+  margin-top: 2rem;
+}
+
+.poem-reflection p {
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+
+/* Footer */
+footer {
+  padding: 4rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  margin-top: 6rem;
+}
+
+footer p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .container {
+    padding: 3rem 1.5rem;
+  }
+
+  .work-header {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
