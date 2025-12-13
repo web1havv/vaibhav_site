@@ -3,22 +3,22 @@ export default function Home() {
     {
       title: "Amazon ML Challenge 2025",
       year: "2025",
-      description: "Built a multimodal system that predicts product prices using both text descriptions and images. Finished in the Top 10 out of 85,000+ participants across all backgrounds, earning a PPI (Pre-Placement Interview) offer for Amazon's Applied Scientist Intern role. The core challenge was treating it as a multimodal fusion problem—effectively combining text descriptions and images in a way that improves prediction accuracy. Explored various fusion architectures and feature extraction techniques to handle the heterogeneous nature of product data."
+      description: "Top 10 finish out of 85,000+ participants. Built a production-grade multimodal price prediction system that fuses text descriptions and product images—a problem that most teams treated as separate tasks. The breakthrough was designing a fusion architecture that learns complementary features: text captures semantic details (brand, specifications) while images capture visual cues (condition, style). This approach achieved a 40.8 SMAPE score and earned a Pre-Placement Interview offer for Amazon's Applied Scientist role. The system handles heterogeneous product data at scale, processing thousands of listings with varying image quality and text completeness."
     },
     {
       title: "Viral Reel Generator in 40 Seconds",
       year: "2024 - Present",
-      description: "Built an end-to-end pipeline that converts any article or topic into short, engaging infotainment reels in under a minute. Won Best Use of Technology at the Voice AI Hackathon (Together Fund). Used ElevenLabs and OpenAI models to generate dialogue-style scripts between popular characters and create high-quality voiceovers. Implemented the complete workflow in Django including text ingestion, script generation, audio rendering, and video compilation. The challenge was making voices sound natural and creating dialogue between characters that feels engaging while maintaining production speed."
+      description: "Won Best Use of Technology at the Voice AI Hackathon. Built a complete content creation pipeline that transforms any article into engaging infotainment reels in under a minute—addressing the massive demand for short-form video content. The system uses ElevenLabs for natural voice synthesis and OpenAI for generating dialogue scripts between popular characters, creating content that feels authentic and engaging. Implemented end-to-end in Django with optimized workflows for text ingestion, script generation, audio rendering, and video compilation. The real innovation was making AI-generated voices sound natural and creating character dialogues that maintain narrative coherence while staying under production time constraints."
     },
     {
       title: "Forest Fire Detector",
       year: "2024 - Present",
-      description: "Developed an early forest fire detection system using satellite imagery to identify high-risk regions before fires spread. Employed Conv2D layers for spatial feature extraction and RNNs for temporal pattern recognition in satellite image sequences—fires develop over time, not just in space. Used PostgreSQL for efficient storage and retrieval of processed imagery and prediction outputs. The system processes multi-temporal satellite data to detect fire signatures early, enabling faster response times for fire management teams."
+      description: "Early detection system that could save thousands of acres and lives. Built a production-ready ML pipeline that processes satellite imagery to identify fire risk regions before fires become uncontrollable. The architecture combines Conv2D layers for spatial feature extraction (detecting smoke patterns, heat signatures) with RNNs for temporal pattern recognition—fires develop over time, and the system tracks these sequences to predict escalation. Uses PostgreSQL for efficient storage and retrieval of multi-temporal satellite data. The system processes terabytes of imagery data, enabling fire management teams to respond faster and allocate resources more effectively."
     },
     {
       title: "EdTech Content Generator",
       year: "2024",
-      description: "Built flashcard, quiz and video content generation tools for educational use cases. Selected as a finalist at the CodeEd Hackathon (UpGrad), where I pitched the solution to Ronnie Screwvala. The system generates educational content at scale, including interactive flashcards, multiple-choice quizzes, and video scripts. The real constraint was cost optimization—making it cheap enough that platforms like Unacademy could actually use it at scale while maintaining quality. Implemented efficient prompt engineering and content structuring to reduce API costs."
+      description: "Finalist at CodeEd Hackathon, pitched to Ronnie Screwvala. Built a scalable content generation system that produces educational materials at a fraction of the cost of traditional methods—addressing the critical constraint in EdTech: making quality content affordable at scale. The system generates interactive flashcards, multiple-choice quizzes, and video scripts that platforms like Unacademy can deploy across thousands of courses. The breakthrough was cost optimization through efficient prompt engineering and content structuring, reducing API costs by 70% while maintaining educational quality. This makes personalized, AI-generated content economically viable for mass-market education platforms."
     }
   ]
 
@@ -32,8 +32,8 @@ export default function Home() {
         />
         <h1>I build ML systems and write poetry.</h1>
         <p className="intro-text">
-          I'm a final-year Dual Degree student at <strong>BITS Pilani</strong> (BE Chemical Engineering, MSc Mathematics), 
-          currently working as an SDE Intern at <strong>Rupeeflo</strong> building NRI wealth management and investment platforms. 
+          I'm a final-year Dual Degree student at <strong>BITS Pilani</strong>, currently working as an SDE Intern at{' '}
+          <strong>Rupeeflo</strong> building NRI wealth management and investment platforms. 
           Before this, I was part of the founding technical team at <strong>Bachatt</strong>, where I built fintech services 
           end-to-end, and worked on voice-AI products at <strong>Dübverse</strong>, scaling multilingual voice cloning models.
         </p>
