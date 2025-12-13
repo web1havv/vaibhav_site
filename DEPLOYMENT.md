@@ -1,19 +1,21 @@
 # Deployment Instructions for GitHub Pages
 
-## Repository Information
+## Step 1: Create GitHub Repository
 
-- **Repository**: `https://github.com/web1havv/vaibhav_site.git`
-- **Custom Domain**: `vaibhav16.me`
-- **Deployment Branch**: `gh-pages`
-
-## Step 1: Initial Setup (if needed)
-
-1. Go to https://github.com/web1havv/vaibhav_site
-2. Make sure the repository exists and is public
+1. Go to https://github.com/new
+2. Repository name: `vaibhav_site` (or any name you prefer)
+3. Leave it public
+4. Don't initialize with README
+5. Click "Create repository"
 
 ## Step 2: Push Code to GitHub
 
+From the vaibhav site directory:
+
 ```bash
+git init
+git add .
+git commit -m "Initial commit: Personal portfolio"
 git branch -M main
 git remote add origin https://github.com/web1havv/vaibhav_site.git
 git push -u origin main
@@ -28,7 +30,7 @@ npm run deploy
 This will:
 - Build the production version
 - Create a `gh-pages` branch
-- Push the built files to that branch (including the CNAME file for custom domain)
+- Push the built files to that branch
 
 ## Step 4: Configure GitHub Pages
 
@@ -61,30 +63,31 @@ git push
 npm run deploy
 ```
 
-## Custom Domain Setup (vaibhav16.me)
+## Optional: Custom Domain
 
-The site is configured to use the custom domain `vaibhav16.me`.
+To use your own domain (e.g., vaibhav16.me):
 
-**DNS Configuration Required:**
-Configure your domain's DNS settings with your registrar:
-- **Option 1 (Recommended)**: Add a CNAME record:
-  - Type: `CNAME`
-  - Name: `@` (or root domain)
-  - Value: `web1havv.github.io`
-  
-- **Option 2**: Add A records pointing to GitHub's IPs:
-  - 185.199.108.153
-  - 185.199.109.153
-  - 185.199.110.153
-  - 185.199.111.153
-
-The `public/CNAME` file is already configured with `vaibhav16.me` and will be deployed automatically.
+1. Buy a domain from any registrar
+2. Create a file `public/CNAME` with your domain:
+   ```
+   vaibhav16.me
+   ```
+3. Update `vite.config.js` and change `base: '/vaibhav_site/'` to `base: '/'`
+4. Configure your domain's DNS:
+   - Add A records pointing to GitHub's IPs:
+     - 185.199.108.153
+     - 185.199.109.153
+     - 185.199.110.153
+     - 185.199.111.153
+   - Or add a CNAME record: `web1havv.github.io`
+5. Deploy: `npm run deploy`
+6. In GitHub Settings → Pages, add your custom domain
 
 ## Troubleshooting
 
 **Site not loading CSS/JS?**
-- The `base` path in `vite.config.js` is set to `'/'` for the custom domain
-- Make sure you've deployed with `npm run deploy` after any changes
+- Make sure `base: '/'` in `vite.config.js` matches your setup
+- If using custom domain, set `base: '/'`
 
 **404 on page reload?**
 - This is normal for single-page apps on GitHub Pages

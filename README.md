@@ -11,30 +11,29 @@ npm run dev
 
 ## Deploy to GitHub Pages
 
-1. Create a new repository on GitHub named `portfolio-site` (or whatever you prefer)
+**Repository**: `https://github.com/web1havv/vaibhav_site.git`
+**Custom Domain**: `vaibhav16.me`
 
-2. Initialize git and push:
+1. Push code to GitHub:
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
 git branch -M main
-git remote add origin https://github.com/web1havv/portfolio-site.git
+git remote add origin https://github.com/web1havv/vaibhav_site.git
 git push -u origin main
 ```
 
-3. Deploy to GitHub Pages:
+2. Deploy to GitHub Pages:
 ```bash
 npm run deploy
 ```
 
-4. Go to your GitHub repository settings:
+3. Go to your GitHub repository settings:
    - Settings → Pages
    - Under "Source", select "Deploy from a branch"
    - Under "Branch", select "gh-pages" and "/ (root)"
+   - Under "Custom domain", enter `vaibhav16.me`
    - Click Save
 
-Your site will be live at: `https://web1havv.github.io/portfolio-site/`
+Your site will be live at: `https://vaibhav16.me`
 
 ## Updating the Site
 
@@ -46,8 +45,12 @@ git push
 npm run deploy
 ```
 
-## Custom Domain (Optional)
+## Custom Domain Setup
 
-To use a custom domain:
-1. Add a file named `CNAME` in the `public` folder with your domain
-2. Configure your domain's DNS settings to point to GitHub Pages
+The site is configured to use the custom domain `vaibhav16.me`.
+
+**DNS Configuration:**
+- Add a CNAME record: `@` → `web1havv.github.io`
+- Or add A records pointing to GitHub's IPs (185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153)
+
+The `public/CNAME` file is already configured and will be deployed automatically.
