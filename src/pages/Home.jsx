@@ -32,7 +32,7 @@ export default function Home() {
         />
         <h1>I build ML systems and write poetry.</h1>
         <p className="intro-text">
-          I'm a dual degree student at <strong>BITS Pilani</strong> (Chemical Engineering + Math) currently working at{' '}
+          I'm a dual degree student at <strong>BITS Pilani</strong> currently working at{' '}
           <strong>Rupeeflo</strong> on NRI investment platforms. Before this, I was part of the founding team at{' '}
           <strong>Bachatt</strong> and worked on voice cloning at <strong>Dübverse</strong>.
         </p>
