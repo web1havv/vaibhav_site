@@ -6,7 +6,7 @@ import WritingPage from './pages/WritingPage'
 
 function App() {
   return (
-    <Router basename="/vaibhav">
+    <Router>
       <div className="app">
         <Nav />
         <Routes>
