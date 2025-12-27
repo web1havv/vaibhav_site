@@ -26,9 +26,12 @@ export default function Home() {
     <main className="container">
       <section className="intro">
         <img
-          src="https://media.licdn.com/dms/image/v2/D4D03AQFg_YG70ABw0w/profile-displayphoto-scale_400_400/B4DZknsBcpJEAg-/0/1757307478006?e=1766016000&v=beta&t=kgt5QEeTBL3_NXSv9fw6CujizJt5IrJy6RRZG_IHUkY"
+          src="/profile.jpg"
           alt="Vaibhav"
           className="intro-image"
+          onError={(e) => {
+            e.target.style.display = 'none'
+          }}
         />
         <h1>I build ML systems and write poetry.</h1>
         <p className="intro-text">

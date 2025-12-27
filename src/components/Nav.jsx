@@ -8,6 +8,7 @@ export default function Nav() {
         <div className="nav-links">
           <Link to="/">About</Link>
           <Link to="/writing">Writing</Link>
+          <Link to="/blogs">Blogs</Link>
           <a href="https://www.linkedin.com/in/vaibhav-sharma-9305b7232" target="_blank" rel="noopener noreferrer">
             LinkedIn
           </a>
