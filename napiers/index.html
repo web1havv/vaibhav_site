@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Cost & Voice AI Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 20px;">
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="chakra-logo">
+                        <svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="30" cy="30" r="28" fill="none" stroke="white" stroke-width="2"/>
+                            <g id="chakra-spokes">
+                                <path d="M30 2 L32 12 L30 15 L28 12 Z" fill="white"/>
+                                <path d="M58 30 L48 32 L45 30 L48 28 Z" fill="white" transform="rotate(45 30 30)"/>
+                                <path d="M30 58 L32 48 L30 45 L28 48 Z" fill="white" transform="rotate(90 30 30)"/>
+                                <path d="M2 30 L12 28 L15 30 L12 32 Z" fill="white" transform="rotate(135 30 30)"/>
+                                <path d="M30 2 L32 12 L30 15 L28 12 Z" fill="white" transform="rotate(180 30 30)"/>
+                                <path d="M58 30 L48 32 L45 30 L48 28 Z" fill="white" transform="rotate(225 30 30)"/>
+                                <path d="M30 58 L32 48 L30 45 L28 48 Z" fill="white" transform="rotate(270 30 30)"/>
+                                <path d="M2 30 L12 28 L15 30 L12 32 Z" fill="white" transform="rotate(315 30 30)"/>
+                                <circle cx="30" cy="30" r="12" fill="none" stroke="white" stroke-width="1.5"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 style="margin: 0;">NAPIERS</h1>
+                        <p class="subtitle" style="margin-top: 4px;">Calculate costs, latency, and optimize your AI usage across 2,000+ models</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 11px; color: var(--white); font-style: italic;">created with ❤️ by webhavvv</p>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: var(--white); font-weight: 600; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Input & Output tokens are in billions (1B tokens). Prices shown per 1 billion tokens (1B tokens)</p>
+            <p style="font-size: 11px; color: var(--white); margin-top: 4px;">Context Window = Maximum tokens a model can process in one request (input + output)</p>
+        </header>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="calculator">Calculator</button>
+            <button class="tab-btn" data-tab="voice">Voice AI</button>
+            <button class="tab-btn" data-tab="explorer">Explorer</button>
+            <button class="tab-btn" data-tab="compare">Compare</button>
+            <button class="tab-btn" data-tab="batch">Batch</button>
+            <button class="tab-btn" data-tab="optimizer">Optimizer</button>
+            <button class="tab-btn" data-tab="statistics">Statistics</button>
+            <button class="tab-btn" data-tab="favorites">Favorites</button>
+            <button class="tab-btn" data-tab="chat-agent">Chat Agent</button>
+            <button class="tab-btn" data-tab="multimodal">Multi-Modal</button>
+            <button class="tab-btn" data-tab="documentation">Documentation</button>
+        </div>
+
+        <!-- Model Explorer Tab -->
+        <div id="explorer" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="max-width: 1200px; margin: 0 auto;">
+                <div style="border: 2px solid var(--white); padding: 40px; margin-bottom: 30px; text-align: center;">
+                    <h2 style="font-size: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Select Filters to Explore Models</h2>
+                    <p style="font-size: 12px; color: var(--white); margin-bottom: 24px;">Choose at least one filter to view models. This helps you find exactly what you need.</p>
+                </div>
+                
+                <div class="search-filters">
+                    <div class="search-box">
+                        <input type="text" id="modelSearch" placeholder="Search models by name or provider...">
+                    </div>
+                    <div class="filters" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="input-group">
+                            <label style="margin-bottom: 8px;">Provider</label>
+                            <select id="providerFilter">
+                                <option value="">Select Provider...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label style="margin-bottom: 8px;">Model Type</label>
+                            <select id="typeFilter">
+                                <option value="">Select Type...</option>
+                                <option value="chat">Chat</option>
+                                <option value="text">Text</option>
+                                <option value="embedding">Embedding</option>
+                                <option value="image">Image</option>
+                                <option value="audio">Audio</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label style="margin-bottom: 8px;">Features</label>
+                            <select id="featureFilter">
+                                <option value="">Select Feature...</option>
+                                <option value="tools">Tools</option>
+                                <option value="image">Image Support</option>
+                                <option value="cache_control">Cache Control</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label style="margin-bottom: 8px;">Max Price ($/1B tokens) - Note: Input/Output tokens are in BILLIONS</label>
+                            <input type="number" id="maxPriceFilter" placeholder="Enter max price..." step="0.001" min="0">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-bar" style="margin-top: 20px;">
+                    <span id="modelCount" style="font-weight: 600;">Select filters to view models</span>
+                    <div class="stats-actions">
+                        <button class="btn" onclick="exportModels('csv')" id="exportCSVBtn" disabled>Export CSV</button>
+                        <button class="btn" onclick="exportModels('json')" id="exportJSONBtn" disabled>Export JSON</button>
+                        <button class="btn btn-secondary" onclick="clearFilters()">Clear All Filters</button>
+                    </div>
+                </div>
+                
+                <div id="modelsGrid" class="models-grid" style="min-height: 400px;">
+                    <div class="placeholder" style="padding: 80px 20px;">
+                        <div style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">No models displayed</div>
+                        <div style="font-size: 12px; color: var(--white);">Please select at least one filter above to explore models</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cost Calculator Tab -->
+        <div id="calculator" class="tab-content active">
+            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Cost Calculator</h2>
+                    <p style="font-size: 12px; color: var(--white);">Calculate exact costs, latency, and visualize token usage for any LLM model</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <!-- Left: Inputs -->
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Model & Usage</h3>
+                        <div class="input-group">
+                            <label>Model</label>
+                            <select id="calcModelSelect">
+                                <option value="">Select model...</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Input Tokens (in billions)</label>
+                                <input type="number" id="inputTokens" value="0.000001" min="0" step="0.000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.000001 = 1,000 tokens, typical for small requests)</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Output Tokens (in billions)</label>
+                                <input type="number" id="outputTokens" value="0.0000005" min="0" step="0.0000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000005 = 500 tokens, typical for small responses)</div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Cache Read (in billions)</label>
+                                <input type="number" id="cacheReadTokens" value="0" min="0" step="0.000001">
+                            </div>
+                            <div class="input-group">
+                                <label>Cache Write (in billions)</label>
+                                <input type="number" id="cacheWriteTokens" value="0" min="0" step="0.000001">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Web Searches</label>
+                                <input type="number" id="webSearches" value="0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>File Searches</label>
+                                <input type="number" id="fileSearches" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Thinking Tokens</label>
+                                <input type="number" id="thinkingTokens" value="0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Requests</label>
+                                <input type="number" id="numRequests" value="1" min="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-detail-section">
+                        <h3>Latency Settings</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Network Latency (ms)</label>
+                                <input type="number" id="networkLatency" value="50" min="0" step="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Processing Speed (tokens/sec)</label>
+                                <input type="number" id="processingSpeed" value="100" min="1" step="10">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">GPT-4o: ~100-150, Claude 3.5: ~80, GPT-4o-mini: ~150+</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Enable Streaming</label>
+                            <input type="checkbox" id="enableStreaming" checked style="width: auto; margin-top: 8px;">
+                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Streaming reduces perceived latency</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right: Results -->
+                <div>
+                    <div class="calc-result" style="margin-bottom: 20px;">
+                        <div class="cost-breakdown">
+                            <h3>Cost Breakdown</h3>
+                            <div id="costDetails"></div>
+                            <div class="total-cost">
+                                <span class="label">Total</span>
+                                <span id="totalCost" class="amount">$0.00</span>
+                            </div>
+                            <div class="total-cost" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--white);">
+                                <span class="label">Per Request</span>
+                                <span id="perRequestCost" class="amount" style="font-size: 20px;">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="margin-bottom: 20px; border: 1px solid var(--white); padding: 24px;">
+                        <h3 style="margin-bottom: 16px; font-size: 12px;">Estimated Latency</h3>
+                        <div class="stat-value" id="estimatedLatency" style="font-size: 42px; margin-bottom: 8px;">0 ms</div>
+                        <div class="stat-label" id="latencyStatus" style="margin-top: 8px;">-</div>
+                        <div id="latencyBreakdownCalc" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--white);"></div>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 12px;">
+                        <button class="btn" onclick="exportCalculation('csv')">Export CSV</button>
+                        <button class="btn" onclick="exportCalculation('json')">Export JSON</button>
+                        <button class="btn btn-secondary" onclick="simulateRequest()">Simulate Request</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Interactive Charts Section -->
+            <div class="model-detail-section" style="margin-top: 40px;">
+                <h3>Visualizations</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div style="border: 1px solid var(--white); padding: 20px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Distribution</h4>
+                        <div id="costChart" style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--white);">
+                            <div style="text-align: center;">Enter values to see chart</div>
+                        </div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 20px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Token Usage</h4>
+                        <div id="tokenChart" style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--white);">
+                            <div style="text-align: center;">Enter values to see chart</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Calculator Tab -->
+        <div id="batch" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Batch Input</h3>
+                        <div class="input-group">
+                            <label>JSON Array of Requests</label>
+                            <div class="batch-input">
+                                <textarea id="batchInput" placeholder='[{"model": "openai:gpt-4o", "input": 1, "output": 0.5}, {"model": "anthropic:claude-3-5-sonnet-20241022", "input": 2, "output": 1}]'></textarea>
+                            </div>
+                            <div style="font-size: 11px; color: var(--white); margin-top: 8px;">
+                                Enter an array of objects with: model (provider:name), input (tokens in billions), output (tokens in billions)
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="calculateBatch()" style="width: 100%; margin-top: 10px;">Calculate Batch</button>
+                    </div>
+                    <div class="model-detail-section">
+                        <h3>Quick Templates</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn" onclick="loadBatchTemplate('comparison')" style="text-align: left; text-transform: none;">Compare 3 Popular Models</button>
+                            <button class="btn" onclick="loadBatchTemplate('monthly')" style="text-align: left; text-transform: none;">Monthly Usage Estimate</button>
+                            <button class="btn" onclick="loadBatchTemplate('scenario')" style="text-align: left; text-transform: none;">Cost Scenario Analysis</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div id="batchResults" class="batch-results">
+                        <div class="placeholder" style="padding: 80px 20px;">
+                            <div style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">No batch calculation yet</div>
+                            <div style="font-size: 12px; color: var(--white);">Enter JSON array and click Calculate Batch</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="batchCharts" style="display: none; margin-top: 40px;">
+                <div class="model-detail-section">
+                    <h3>Visualizations</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Distribution</h4>
+                            <div id="batchCostChart" style="height: 300px;"></div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Model Comparison</h4>
+                            <div id="batchModelChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compare Models Tab -->
+        <div id="compare" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Model Selection</h3>
+                        <div class="compare-selector" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="compare-item">
+                                <label>Model 1</label>
+                                <select id="compareModel1">
+                                    <option value="">Select model...</option>
+                                </select>
+                            </div>
+                            <div class="compare-item">
+                                <label>Model 2</label>
+                                <select id="compareModel2">
+                                    <option value="">Select model...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-detail-section">
+                        <h3>Test Parameters</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Input Tokens (in billions)</label>
+                                <input type="number" id="compareInputTokens" value="0.000001" min="0" step="0.000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Output Tokens (in billions)</label>
+                                <input type="number" id="compareOutputTokens" value="0.0000005" min="0" step="0.0000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions</div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Number of Requests</label>
+                                <input type="number" id="compareNumRequests" value="100" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Processing Speed (tokens/sec)</label>
+                                <input type="number" id="compareProcessingSpeed" value="100" min="1" step="10">
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="compareModels()" style="margin-top: 10px; width: 100%;">Compare Models</button>
+                    </div>
+                </div>
+                <div>
+                    <div id="comparisonResult" class="comparison-result">
+                        <p class="placeholder">Select two models to compare</p>
+                    </div>
+                </div>
+            </div>
+            <div id="comparisonCharts" style="display: none; margin-top: 40px;">
+                <div class="model-detail-section">
+                    <h3>Visual Comparison</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Comparison</h4>
+                            <div id="compareCostChart" style="height: 200px;"></div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Latency Comparison</h4>
+                            <div id="compareLatencyChart" style="height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <h3>Total Models</h3>
+                    <div class="stat-value" id="statTotalModels">0</div>
+                    <div class="stat-label">across all providers</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Providers</h3>
+                    <div class="stat-value" id="statProviders">0</div>
+                    <div class="stat-label">different providers</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Input Price</h3>
+                    <div class="stat-value" id="statAvgInput">$0.00</div>
+                    <div class="stat-label">per 1 billion tokens</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Output Price</h3>
+                    <div class="stat-value" id="statAvgOutput">$0.00</div>
+                    <div class="stat-label">per 1 billion tokens</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Cheapest Model</h3>
+                    <div class="stat-value" id="statCheapest" style="font-size: 18px;">-</div>
+                    <div class="stat-label" id="statCheapestPrice">$0.00/1K</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Most Expensive</h3>
+                    <div class="stat-value" id="statExpensive" style="font-size: 18px;">-</div>
+                    <div class="stat-label" id="statExpensivePrice">$0.00/1K</div>
+                </div>
+            </div>
+            <div class="model-detail">
+                <h3 style="margin-bottom: 20px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Provider Breakdown</h3>
+                <table class="data-table" id="providerTable">
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Models</th>
+                            <th>Avg Input ($/1M)</th>
+                            <th>Avg Output ($/1M)</th>
+                            <th>Types</th>
+                        </tr>
+                    </thead>
+                    <tbody id="providerTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Favorites Tab -->
+        <div id="favorites" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div class="stats-bar">
+                <span id="favoritesCount">0 favorites</span>
+                <div class="stats-actions">
+                    <button class="btn" onclick="clearFavorites()">Clear All</button>
+                    <button class="btn" onclick="exportFavorites()">Export</button>
+                </div>
+            </div>
+            <div id="favoritesGrid" class="models-grid">
+                <p class="placeholder">No favorites yet. Click the star icon on any model to add it.</p>
+            </div>
+        </div>
+
+        <!-- Optimizer Tab -->
+        <div id="optimizer" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Optimization Criteria</h3>
+                        <div class="input-group">
+                            <label>Use Case</label>
+                            <select id="useCaseSelect">
+                                <option value="">Select use case...</option>
+                                <option value="chat">General Chat</option>
+                                <option value="code">Code Generation</option>
+                                <option value="analysis">Data Analysis</option>
+                                <option value="embedding">Embeddings</option>
+                                <option value="image">Image Processing</option>
+                                <option value="long">Long Context</option>
+                                <option value="cheap">Cost Sensitive</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Expected Input Tokens (in billions)</label>
+                                <input type="number" id="optInputTokens" value="0.01" min="0" step="0.001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.01 = 10M monthly)</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Expected Output Tokens (in billions)</label>
+                                <input type="number" id="optOutputTokens" value="0.005" min="0" step="0.001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.005 = 5M monthly)</div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Monthly Requests</label>
+                                <input type="number" id="optMonthlyRequests" value="10000" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Max Budget ($)</label>
+                                <input type="number" id="optMaxBudget" value="100" min="0" step="0.01">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Required Features</label>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 8px;">
+                                <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; text-transform: none; cursor: pointer;">
+                                    <input type="checkbox" id="optFeatureTools" style="width: auto;">
+                                    Tools
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; text-transform: none; cursor: pointer;">
+                                    <input type="checkbox" id="optFeatureImage" style="width: auto;">
+                                    Image
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; text-transform: none; cursor: pointer;">
+                                    <input type="checkbox" id="optFeatureCache" style="width: auto;">
+                                    Cache
+                                </label>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="optimizeModel()" style="margin-top: 10px; width: 100%;">Find Optimal Model</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="calc-result">
+                        <div class="cost-breakdown">
+                            <h3>Top Recommendations</h3>
+                            <div id="optimizerResults">
+                                <div class="placeholder" style="padding: 40px; text-align: center;">
+                                    <div style="font-size: 14px; margin-bottom: 8px;">Enter criteria and click "Find Optimal Model"</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="optimizerCharts" style="display: none; margin-top: 40px;">
+                <div class="model-detail-section">
+                    <h3>Visual Comparison</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Comparison</h4>
+                            <div id="optimizerCostChart" style="height: 300px;"></div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Savings Potential</h4>
+                            <div id="optimizerSavingsChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Voice AI Calculator Tab -->
+        <div id="voice" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Voice AI Calculator</h2>
+                    <p style="font-size: 12px; color: var(--white);">Calculate complete voice AI costs including transcription, LLM, TTS, hosting, and latency breakdown</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <!-- Left: Inputs -->
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>API Providers & Costs</h3>
+                        <div class="input-group">
+                            <label>LLM Provider</label>
+                            <select id="voiceLLMProvider">
+                                <option value="">Loading models...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>STT Provider</label>
+                            <select id="voiceSTTProvider">
+                                <option value="openai:gpt-4o-transcribe">GPT-4o-Transcribe (OpenAI)</option>
+                                <option value="openai:gpt-4o-mini-transcribe">GPT-4o-mini-Transcribe (OpenAI)</option>
+                                <option value="openai:whisper-1">Whisper-1 (OpenAI)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>TTS Provider</label>
+                            <select id="voiceTTSProvider">
+                                <option value="openai:tts-1">TTS-1 (OpenAI)</option>
+                                <option value="openai:tts-1-hd">TTS-1-HD (OpenAI)</option>
+                                <option value="openai:gpt-4o-mini-tts">GPT-4o-mini-TTS (OpenAI)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Current Pricing</h3>
+                        <div style="background: var(--black); padding: 16px; margin-bottom: 16px; border: 1px solid var(--white);">
+                            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; color: var(--white);">LLM Pricing (Auto-loaded)</div>
+                            <div style="font-size: 10px; color: var(--white); margin-bottom: 12px;">Per 1 billion tokens (prices). Input/Output tokens are in BILLIONS.</div>
+                            <div class="detail-item" style="padding: 6px 0; border-bottom: 1px solid var(--white);">
+                                <span>LLM Input Token Cost</span>
+                                <span id="llmInputPriceDisplay" style="font-weight: 600;">-</span>
+                            </div>
+                            <div class="detail-item" style="padding: 6px 0;">
+                                <span>LLM Output Token Cost</span>
+                                <span id="llmOutputPriceDisplay" style="font-weight: 600;">-</span>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Transcription Cost/Min</label>
+                                <input type="number" id="transcriptionCost" value="0.006" step="0.000001" min="0">
+                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;" id="sttPriceDisplay">Auto-calculated</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Voice Cost/Character</label>
+                                <input type="number" id="voiceCost" value="0.000015" step="0.000000001" min="0">
+                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;" id="ttsPriceDisplay">Auto-calculated from TTS model</div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>vCPU Cost/Minute</label>
+                                <input type="number" id="vcpuCost" value="0.00007083333" step="0.00001" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Agents Per vCPU</label>
+                                <input type="number" id="agentsPerVCPU" value="1" min="1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="model-detail-section">
+                        <h3>Calculation Assumptions</h3>
+                        <div class="input-group">
+                            <label>Conversation Length</label>
+                            <input type="number" id="convoLength" value="15" min="1">
+                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">minutes</div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Words Per Minute</label>
+                                <input type="number" id="wordsPerMin" value="100" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Tokens Per Word</label>
+                                <input type="number" id="tokensPerWord" value="1.3" step="0.1" min="0.1">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Characters/Word</label>
+                                <input type="number" id="charsPerWord" value="6" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Turns Per Minute</label>
+                                <input type="number" id="turnsPerMin" value="4" min="1">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                        <div class="input-group">
+                            <label>LLM Speech Ratio</label>
+                            <input type="number" id="llmSpeechRatio" value="0.5" step="0.1" min="0" max="1">
+                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Ratio of LLM speech vs user (0-1)</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Context Window (turns)</label>
+                                <input type="number" id="contextWindowTurns" value="10" min="1" max="100">
+                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Max turns in context (sliding window)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Results -->
+                <div>
+                    <div class="calc-result" style="margin-bottom: 20px;">
+                        <div class="cost-breakdown">
+                            <h3>Results</h3>
+                            <div id="voiceResults">
+                                <div class="stat-card" style="margin-bottom: 20px; border: 1px solid var(--white); padding: 24px; text-align: center;">
+                                    <h3 style="margin-bottom: 16px; font-size: 12px;">Total Cost</h3>
+                                    <div class="stat-value" id="voiceTotalCost" style="font-size: 42px; margin-bottom: 8px;">$0.00</div>
+                                    <div class="stat-label" id="voiceCostPerMin" style="margin-top: 8px;">$0.00 per minute</div>
+                                    <div style="font-size: 11px; color: var(--white); margin-top: 12px; font-style: italic;">Final prices might be higher!</div>
+                                </div>
+                                <div id="voiceCostBreakdown"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="model-detail-section">
+                        <h3>Token Usage</h3>
+                        <div id="tokenUsage" style="padding: 20px; background: var(--black); border: 1px solid var(--white);">
+                            <div class="detail-item" style="padding: 12px 0; border-bottom: 1px solid var(--white);">
+                                <span style="font-weight: 600;">Input Tokens</span>
+                                <span id="inputTokensDisplay" style="font-weight: 700; font-size: 18px;">0</span>
+                            </div>
+                            <div class="detail-item" style="padding: 12px 0;">
+                                <span style="font-weight: 600;">Output Tokens</span>
+                                <span id="outputTokensDisplay" style="font-weight: 700; font-size: 18px;">0</span>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn" onclick="exportVoiceAICalculation('csv')">Export CSV</button>
+                            <button class="btn" onclick="exportVoiceAICalculation('json')">Export JSON</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Latency Section -->
+            <div class="model-detail-section" style="margin-top: 40px;">
+                <h3>Latency Breakdown</h3>
+                <div id="latencyBreakdown"></div>
+            </div>
+            
+            <!-- Formula Documentation -->
+            <div class="model-detail-section" style="margin-top: 40px;">
+                <h3>Formula Documentation</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">LLM Input Tokens</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px; line-height: 1.6;">
+                            tokens_per_turn × (early_quadratic + sliding_window)
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">Sliding window caps context growth (default 10 turns)</div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">LLM Output Tokens</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px;">
+                            words_per_min × tokens_per_word × llm_speech_ratio × convo_length
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">Based on speaking ratio</div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Transcription Cost</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px;">
+                            transcription_cost_per_min × convo_length
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">Total speech-to-text cost</div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">LLM Cost</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px;">
+                            (input_tokens × input_cost) + (output_tokens × output_cost)
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">Combined processing cost</div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Voice Cost (TTS)</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px; line-height: 1.6;">
+                            voice_cost × words_per_min × chars_per_word × llm_speech_ratio × convo_length
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">TTS for AI responses (llm_speech_ratio)</div>
+                    </div>
+                    <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Hosting Cost</h4>
+                        <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); margin-bottom: 8px;">
+                            (vcpu_cost × convo_length) ÷ agents_per_vcpu
+                        </div>
+                        <div style="font-size: 10px; color: var(--white);">Infrastructure per agent</div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Real-World Defaults Documentation -->
+            <div class="model-detail-section" style="margin-top: 40px;">
+                <h3>Real-World Default Assumptions</h3>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; font-size: 11px;">
+                        <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Conversation Parameters</h4>
+                        <div style="line-height: 2; color: var(--white);">
+                            <div><strong>100 WPM:</strong> Average conversational speech rate (120-150 WPM fast, 80-100 WPM slow)</div>
+                            <div><strong>1.3 tokens/word:</strong> Standard for English text (OpenAI tokenizer averages 1.2-1.4)</div>
+                            <div><strong>6 chars/word:</strong> English average including spaces (~4.5 letters + space)</div>
+                            <div><strong>4 turns/min:</strong> Natural conversation pace (15 sec per turn average)</div>
+                            <div><strong>0.5 LLM ratio:</strong> Balanced conversation (50% AI, 50% user speaking time)</div>
+                            <div><strong>10 turn context:</strong> Sliding window for practical memory management</div>
+                        </div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 16px;">
+                        <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Latency Components</h4>
+                        <div style="line-height: 2; color: var(--white);">
+                            <div><strong>STT:</strong> 200-450ms (Deepgram ~200ms, Whisper ~400ms)</div>
+                            <div><strong>LLM TTFT:</strong> 50-500ms (model dependent, includes input processing)</div>
+                            <div><strong>TTS:</strong> 80-200ms (ElevenLabs Flash ~80ms, standard ~150ms)</div>
+                            <div><strong>Network:</strong> 10-50ms one-way (varies by region and provider)</div>
+                            <div><strong>Audio I/O:</strong> ~120ms (mic, encoding, jitter buffer, speaker)</div>
+                            <div><strong>Total target:</strong> &lt;800ms for natural conversation feel</div>
+                        </div>
+                        </div>
+                        </div>
+            </div>
+        </div>
+
+        <!-- Chat Agent Calculator Tab -->
+        <div id="chat-agent" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Chat Agent Calculator</h2>
+                    <p style="font-size: 12px; color: var(--white);">Calculate costs for conversational AI agents with multiple turns and context</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Agent Configuration</h3>
+                        <div class="input-group">
+                            <label>LLM Model</label>
+                            <select id="chatAgentModel">
+                                <option value="">Select model...</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Conversation Sessions/Day</label>
+                                <input type="number" id="chatSessionsPerDay" value="1000" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Avg Turns Per Session</label>
+                                <input type="number" id="chatTurnsPerSession" value="10" min="1">
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Avg Input Tokens/Turn (in billions)</label>
+                                <input type="number" id="chatInputPerTurn" value="0.00000015" min="0.00000001" step="0.00000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.00000015 = 150 tokens)</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Avg Output Tokens/Turn (in billions)</label>
+                                <input type="number" id="chatOutputPerTurn" value="0.0000001" min="0.00000001" step="0.00000001">
+                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000001 = 100 tokens)</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Context Accumulation</label>
+                            <select id="chatContextMode">
+                                <option value="full">Full Context (all previous turns)</option>
+                                <option value="sliding">Sliding Window (last N turns)</option>
+                                <option value="summary">Summary-based (summarized context)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="chatSlidingWindowGroup" style="display: none;">
+                            <label>Sliding Window Size</label>
+                            <input type="number" id="chatSlidingWindow" value="5" min="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="calculateChatAgent()" style="width: 100%; margin-top: 10px;">Calculate Chat Agent Cost</button>
+                </div>
+                <div>
+                    <div class="calc-result" style="margin-bottom: 20px;">
+                        <div class="cost-breakdown">
+                            <h3>Cost Analysis</h3>
+                            <div id="chatAgentResults">
+                                <div class="placeholder" style="padding: 40px; text-align: center;">
+                                    <div style="font-size: 14px; margin-bottom: 8px;">Enter parameters and click Calculate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border: 2px solid var(--white); padding: 24px;">
+                        <h3 style="margin-bottom: 16px; font-size: 12px;">Daily Statistics</h3>
+                        <div id="chatAgentStats"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="chatAgentCharts" style="display: none; margin-top: 40px;">
+                <div class="model-detail-section">
+                    <h3>Visualizations</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Per Session</h4>
+                            <div id="chatSessionChart" style="height: 200px;"></div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Token Growth</h4>
+                            <div id="chatTokenChart" style="height: 200px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Modal Calculator Tab -->
+        <div id="multimodal" class="tab-content">
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            </div>
+            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
+                <div style="margin-bottom: 20px;">
+                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Multi-Modal Calculator</h2>
+                    <p style="font-size: 12px; color: var(--white);">Calculate costs for workflows combining text, images, audio, and video</p>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Input Modalities</h3>
+                        <div class="input-group">
+                            <label>Text Input (tokens in billions)</label>
+                            <input type="number" id="multiTextTokens" value="0.000001" min="0" step="0.000001">
+                            <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.000001 = 1K tokens)</div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Images</label>
+                                <input type="number" id="multiNumImages" value="0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Image Resolution</label>
+                                <select id="multiImageRes">
+                                    <option value="512">512x512</option>
+                                    <option value="1024" selected>1024x1024</option>
+                                    <option value="2048">2048x2048</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Audio Duration (seconds)</label>
+                                <input type="number" id="multiAudioSeconds" value="0" min="0">
+                            </div>
+                            <div class="input-group">
+                                <label>Video Duration (seconds)</label>
+                                <input type="number" id="multiVideoSeconds" value="0" min="0">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Model Selection</h3>
+                        <div class="input-group">
+                            <label>Multi-Modal Model</label>
+                            <select id="multiModalModel">
+                                <option value="">Select model...</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Output Tokens (in billions)</label>
+                            <input type="number" id="multiOutputTokens" value="0.0000005" min="0" step="0.0000001">
+                            <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000005 = 500 tokens)</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="calculateMultiModal()" style="width: 100%; margin-top: 10px;">Calculate Multi-Modal Cost</button>
+                </div>
+                <div>
+                    <div class="calc-result" style="margin-bottom: 20px;">
+                        <div class="cost-breakdown">
+                            <h3>Cost Breakdown</h3>
+                            <div id="multiModalResults">
+                                <div class="placeholder" style="padding: 40px; text-align: center;">
+                                    <div style="font-size: 14px; margin-bottom: 8px;">Enter parameters and click Calculate</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border: 2px solid var(--white); padding: 24px;">
+                        <h3 style="margin-bottom: 16px; font-size: 12px;">Modality Costs</h3>
+                        <div id="multiModalBreakdown"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documentation Tab -->
+        <div id="documentation" class="tab-content">
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
+                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Documentation</h2>
+                    <p style="font-size: 12px; color: var(--white);">Complete formulas, calculations, and assumptions used in NAPIERS</p>
+                </div>
+
+                <!-- FORMULAS Section -->
+                <div class="model-detail-section" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 16px; margin-bottom: 20px;">FORMULAS</h3>
+                    
+                    <!-- Cost Calculation -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Calculation</h4>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Basic Token Cost</h5>
+                            <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                Input Cost = Input Tokens (in billions) × Input Price per 1B tokens<br>
+                                Output Cost = Output Tokens (in billions) × Output Price per 1B tokens<br>
+                                Total Cost = Input Cost + Output Cost + Additional Costs
+                            </div>
+                            <div style="font-size: 10px; color: var(--white); margin-top: 8px;">
+                                <strong>Price Conversion:</strong> $/billion = (cents_per_token ÷ 100) × 1,000,000,000<br>
+                                <strong>Example:</strong> GPT-4o mini input (0.000015 cents/token) = $150/billion = $0.15/million
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Cache Costs</h5>
+                            <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                Cache Read Cost = Cache Read Tokens (in billions) × Cache Read Price per 1B tokens<br>
+                                Cache Write Cost = Cache Write Tokens (in billions) × Cache Write Price per 1B tokens
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Additional Units</h5>
+                            <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                Web Search Cost = Number of Searches × (Web Search Price in cents) ÷ 100<br>
+                                File Search Cost = Number of Searches × (File Search Price in cents) ÷ 100<br>
+                                Thinking Token Cost = Thinking Tokens (in billions) × Thinking Token Price per 1B tokens
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latency Calculation -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Latency Calculation</h4>
+                        
+                        <div style="margin-bottom: 16px;">
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Request Latency (Standard LLM)</h5>
+                            <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                <strong>INPUT PROCESSING:</strong><br>
+                                &nbsp;&nbsp;Input Speed = Output Speed × 50 (parallelized)<br>
+                                &nbsp;&nbsp;Input Time = (Input Tokens ÷ Input Speed) × 1,000 ms<br><br>
+                                <strong>OUTPUT PROCESSING:</strong><br>
+                                &nbsp;&nbsp;Full Output Time = (Output Tokens ÷ Output Speed) × 1,000 ms<br>
+                                &nbsp;&nbsp;Streaming Mode: Perceived Latency = min(200ms, max(50ms, Full × 0.1))<br>
+                                &nbsp;&nbsp;Non-Streaming Mode: Perceived Latency = Full Output Time<br><br>
+                                <strong>TOTAL LATENCY:</strong><br>
+                                &nbsp;&nbsp;= Network Round Trip (2 × Network Latency)<br>
+                                &nbsp;&nbsp;+ Input Processing Time<br>
+                                &nbsp;&nbsp;+ Output Perceived Latency
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Time to First Token (TTFT)</h5>
+                            <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                TTFT (Streaming) = Network Latency + Input Processing Time + 50ms<br>
+                                TTFT (Non-Streaming) = Network Latency + Input Processing Time + Output Processing Time
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Agent Formulas -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Chat Agent Formulas</h4>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                            <div style="background: var(--black); padding: 12px; border: 1px solid var(--white);">
+                                <h5 style="font-size: 10px; font-weight: 600; margin-bottom: 8px;">Full Context Mode</h5>
+                                <div style="font-size: 10px; font-family: monospace; line-height: 1.6;">
+                                    Input = Sessions × (Input/Turn × Turns × (Turns + 1) ÷ 2)<br>
+                                    Output = Sessions × (Output/Turn × Turns)
+                                </div>
+                            </div>
+                            <div style="background: var(--black); padding: 12px; border: 1px solid var(--white);">
+                                <h5 style="font-size: 10px; font-weight: 600; margin-bottom: 8px;">Sliding Window Mode</h5>
+                                <div style="font-size: 10px; font-family: monospace; line-height: 1.6;">
+                                    Input = Sessions × (Input/Turn × Turns × Window Size)<br>
+                                    Output = Sessions × (Output/Turn × Turns)
+                                </div>
+                            </div>
+                            <div style="background: var(--black); padding: 12px; border: 1px solid var(--white);">
+                                <h5 style="font-size: 10px; font-weight: 600; margin-bottom: 8px;">Summary-Based Mode</h5>
+                                <div style="font-size: 10px; font-family: monospace; line-height: 1.6;">
+                                    Input = Sessions × (Summary + Input/Turn) × Turns<br>
+                                    Output = Sessions × (Output/Turn × Turns)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Multi-Modal Formulas -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Multi-Modal Formulas</h4>
+                        
+                        <div style="font-size: 11px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                            <strong>Token Estimation:</strong><br>
+                            Image Tokens = Number of Images × (Resolution² ÷ 768)<br>
+                            Audio Tokens = Audio Duration (seconds) × 50<br>
+                            Video Tokens = Video Duration (seconds) × 200<br>
+                            Total Input = Text Tokens + Image Tokens + Audio Tokens + Video Tokens
+                        </div>
+                    </div>
+                    
+                    <!-- Voice AI Formulas -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Voice AI Formulas</h4>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div>
+                                <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">LLM Input Tokens (Sliding Window)</h5>
+                                <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.6;">
+                                    Tokens/Turn = (Words/Min × Tokens/Word) ÷ Turns/Min<br>
+                                    Total Turns = Turns/Min × Conv Length<br>
+                                    If Turns ≤ Window: Input = Tokens/Turn × Turns × (Turns + 1) ÷ 2<br>
+                                    If Turns > Window: Input = Tokens/Turn × (Window×(Window+1)÷2 + (Turns-Window)×Window)
+                                </div>
+                            </div>
+                            <div>
+                                <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">LLM Output Tokens</h5>
+                                <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.6;">
+                                    Output Tokens = Words/Min × Tokens/Word × LLM Speech Ratio × Conv Length
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px;">
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Voice AI Costs</h5>
+                            <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                Transcription = Cost/Min × Conv Length<br>
+                                LLM = (Input ÷ 1B × Input$/B) + (Output ÷ 1B × Output$/B)<br>
+                                TTS = $/Char × Words/Min × Chars/Word × LLM Ratio × Conv Length<br>
+                                Hosting = (vCPU$/Min × Conv Length) ÷ Agents/vCPU<br>
+                                <strong>Total = Transcription + LLM + TTS + Hosting</strong>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 16px;">
+                            <h5 style="font-size: 11px; font-weight: 600; margin-bottom: 8px; color: var(--white);">Voice-to-Voice Latency</h5>
+                            <div style="font-size: 10px; font-family: monospace; background: var(--black); padding: 12px; border: 1px solid var(--white); line-height: 1.8;">
+                                Input Path (114ms) = Mic + Opus Enc + Network + Packet + Jitter + Opus Dec<br>
+                                AI Processing = STT (200-450ms) + LLM (varies) + Aggregation (10ms) + TTS (80-200ms)<br>
+                                Output Path (89ms) = Opus Enc + Packet + Network + Jitter + Opus Dec + Speaker<br>
+                                <strong>Total = 114ms + AI Processing + 89ms</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ASSUMPTIONS Section -->
+                <div class="model-detail-section" style="margin-bottom: 30px;">
+                    <h3 style="font-size: 16px; margin-bottom: 20px;">ASSUMPTIONS</h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Pricing</h4>
+                            <div style="font-size: 11px; line-height: 2; color: var(--white);">
+                                <div>• Prices in USD, pay-as-you-go</div>
+                                <div>• Database stores cents/token, displays as $/billion</div>
+                                <div>• No volume discounts included</div>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Latency</h4>
+                            <div style="font-size: 11px; line-height: 2; color: var(--white);">
+                                <div>• Network: 50ms (100ms round-trip)</div>
+                                <div>• Output speed: 100 tok/s default</div>
+                                <div>• Input speed: 50× output (parallelized)</div>
+                                <div>• Streaming: min(200, max(50, full×0.1)) ms</div>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 12px; font-weight: 600; margin-bottom: 12px; text-transform: uppercase;">Voice AI Defaults</h4>
+                            <div style="font-size: 11px; line-height: 2; color: var(--white);">
+                                <div>• 100 WPM • 1.3 tok/word • 6 chars/word</div>
+                                <div>• 4 turns/min • 0.5 LLM ratio</div>
+                                <div>• 10 turn context window</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GLOSSARY Section -->
+                <div class="model-detail-section">
+                    <h3 style="font-size: 16px; margin-bottom: 20px;">GLOSSARY</h3>
+                    
+                    <!-- Token & Pricing Terms -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; border-bottom: 1px solid var(--white); padding-bottom: 8px;">Token & Pricing Terms</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px;">
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Token</div>
+                                <div style="color: var(--white); line-height: 1.6;">A unit of text that LLMs process. Roughly 4 characters or 0.75 words in English. "Hello world" ≈ 2 tokens.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Input Tokens (Request Tokens)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Tokens sent TO the model. Includes your prompt, system message, and conversation history.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Output Tokens (Response Tokens)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Tokens generated BY the model. The AI's response. Usually 2-4× more expensive than input.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Context Window</div>
+                                <div style="color: var(--white); line-height: 1.6;">Maximum tokens a model can process in one request (input + output combined). GPT-4o: 128K, Claude 3.5: 200K.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Cache Tokens</div>
+                                <div style="color: var(--white); line-height: 1.6;">Tokens stored for reuse. Cache Read: using cached context (cheaper). Cache Write: saving to cache (costs extra).</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Thinking Tokens</div>
+                                <div style="color: var(--white); line-height: 1.6;">Internal reasoning tokens (o1, Claude thinking). Model "thinks" before responding. Billed separately.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">$/1B Tokens</div>
+                                <div style="color: var(--white); line-height: 1.6;">Price per billion tokens. 1B = 1,000,000,000. $150/1B = $0.15/1M = $0.00015/1K tokens.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Pay-As-You-Go (PAYG)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Standard pricing model. Pay only for tokens used, no commitments. Prices shown here are PAYG.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Latency Terms -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; border-bottom: 1px solid var(--white); padding-bottom: 8px;">Latency & Performance Terms</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px;">
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Latency</div>
+                                <div style="color: var(--white); line-height: 1.6;">Total time from request sent to response received. Includes network, processing, and generation time.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">TTFB (Time to First Byte)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Time until first token arrives. Critical for streaming. Good TTFB: &lt;500ms.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">TTFT (Time to First Token)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Same as TTFB. Time until model starts generating output. Affected by input size and model speed.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Streaming</div>
+                                <div style="color: var(--white); line-height: 1.6;">Receiving tokens as they're generated instead of waiting for full response. Reduces perceived latency.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Tokens/Second (tok/s)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Generation speed. Fast models: 100-150 tok/s. Slow models: 30-50 tok/s. Affects output latency.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Network Latency</div>
+                                <div style="color: var(--white); line-height: 1.6;">Time for data to travel between you and API server. Typical: 20-100ms one-way depending on region.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Model Types -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; border-bottom: 1px solid var(--white); padding-bottom: 8px;">Model Types & Features</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px;">
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">LLM (Large Language Model)</div>
+                                <div style="color: var(--white); line-height: 1.6;">AI model trained on text to generate human-like responses. GPT-4, Claude, Gemini, Llama are LLMs.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Chat Model</div>
+                                <div style="color: var(--white); line-height: 1.6;">LLM fine-tuned for conversation. Supports system prompts, user/assistant turns, and chat history.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Embedding Model</div>
+                                <div style="color: var(--white); line-height: 1.6;">Converts text to numerical vectors for similarity search, RAG, and semantic matching. Much cheaper than chat.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Multi-Modal</div>
+                                <div style="color: var(--white); line-height: 1.6;">Models that process multiple input types: text, images, audio, video. GPT-4V, Claude 3, Gemini Pro Vision.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Function Calling / Tools</div>
+                                <div style="color: var(--white); line-height: 1.6;">Model can call external functions/APIs. Returns structured JSON to trigger actions in your code.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">JSON Mode</div>
+                                <div style="color: var(--white); line-height: 1.6;">Forces model to output valid JSON. Useful for structured data extraction and API responses.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Voice AI Terms -->
+                    <div style="border: 1px solid var(--white); padding: 20px; margin-bottom: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; border-bottom: 1px solid var(--white); padding-bottom: 8px;">Voice AI Terms</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px;">
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">STT (Speech-to-Text)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Converts spoken audio to text. Also called ASR (Automatic Speech Recognition). Whisper, Deepgram Nova.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">TTS (Text-to-Speech)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Converts text to spoken audio. Creates AI voice output. ElevenLabs, OpenAI TTS, Google WaveNet.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Voice-to-Voice Latency</div>
+                                <div style="color: var(--white); line-height: 1.6;">Total time from user speaking to AI voice response. Target: &lt;800ms for natural conversation.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">WPM (Words Per Minute)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Speaking rate. Conversational: 100-120 WPM. Fast: 150+ WPM. Slow/careful: 80-100 WPM.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Turn</div>
+                                <div style="color: var(--white); line-height: 1.6;">One exchange in conversation. User speaks → AI responds = 1 turn. Typical: 4-6 turns/minute.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Diarization</div>
+                                <div style="color: var(--white); line-height: 1.6;">Identifying who spoke when in audio with multiple speakers. "Speaker 1 said X, Speaker 2 said Y."</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Architecture Terms -->
+                    <div style="border: 1px solid var(--white); padding: 20px;">
+                        <h4 style="font-size: 13px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; border-bottom: 1px solid var(--white); padding-bottom: 8px;">Architecture & Context Terms</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 11px;">
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Sliding Window</div>
+                                <div style="color: var(--white); line-height: 1.6;">Keeps only last N turns in context to limit token growth. Older messages dropped. Prevents quadratic cost growth.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Full Context</div>
+                                <div style="color: var(--white); line-height: 1.6;">All previous turns included. Costs grow quadratically: turn 10 sends all 9 previous turns. Expensive for long chats.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">RAG (Retrieval Augmented Generation)</div>
+                                <div style="color: var(--white); line-height: 1.6;">Fetch relevant documents and include in prompt. Grounds model responses in your data. Uses embeddings + vector DB.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">System Prompt</div>
+                                <div style="color: var(--white); line-height: 1.6;">Instructions that define AI behavior. "You are a helpful assistant..." Sent with every request, adds to input tokens.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Prompt Engineering</div>
+                                <div style="color: var(--white); line-height: 1.6;">Crafting effective prompts to get desired outputs. Includes few-shot examples, chain-of-thought, formatting.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Fine-Tuning</div>
+                                <div style="color: var(--white); line-height: 1.6;">Training a model on your specific data. Creates custom model. Higher upfront cost, lower per-token cost.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Provider</div>
+                                <div style="color: var(--white); line-height: 1.6;">Company hosting the model API. OpenAI, Anthropic, Google, AWS Bedrock, Azure, Together AI, Groq, etc.</div>
+                            </div>
+                            <div style="padding: 12px; background: var(--black); border: 1px solid var(--white);">
+                                <div style="font-weight: 700; margin-bottom: 6px; color: var(--white);">Inference</div>
+                                <div style="color: var(--white); line-height: 1.6;">Running a trained model to generate output. "Inference costs" = API costs. Contrast with training costs.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Detail Modal -->
+        <div id="modelDetailModal" class="model-detail hidden">
+            <div class="model-detail-header">
+                <div>
+                    <h2 id="detailModelName" style="font-size: 20px; margin-bottom: 4px;"></h2>
+                    <p id="detailProvider" style="color: var(--white); font-size: 12px;"></p>
+                </div>
+                <button class="btn" onclick="closeModelDetail()">Close</button>
+            </div>
+            <div id="modelDetailContent"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
