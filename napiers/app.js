@@ -3215,12 +3215,17 @@ function calculateLatency() {
 // Populate Popular Models dropdown
 function populatePopularModels() {
     const select = document.getElementById('popularModelSelect');
-    if (!select) return;
+    if (!select) {
+        console.error('popularModelSelect not found');
+        return;
+    }
     
     // Clear existing options except the first placeholder
     while (select.children.length > 1) {
         select.removeChild(select.lastChild);
     }
+    
+    console.log(`Populating popular models. allModels count: ${allModels.length}, POPULAR_MODELS_DATA count: ${POPULAR_MODELS_DATA.length}`);
     
     // Group models by provider
     const providers = {};
@@ -3241,8 +3246,8 @@ function populatePopularModels() {
             const exists = allModels.find(m => m.provider === model.provider && m.name === model.name);
             const option = document.createElement('option');
             option.value = `${model.provider}:${model.name}`;
-            option.textContent = model.displayName + (exists ? '' : ' (No pricing data)');
-            option.disabled = !exists;
+            option.textContent = model.displayName + (exists ? '' : ' ⚠️');
+            // Don't disable - allow selection even without pricing data
             optgroup.appendChild(option);
         });
         
