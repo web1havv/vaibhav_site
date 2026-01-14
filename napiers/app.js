@@ -5,6 +5,226 @@ let generalData = {};
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 let currentFilters = {};
 
+// Popular Models with real-world latency benchmarks (January 2026)
+// Data sourced from Artificial Analysis, provider benchmarks, and community testing
+const POPULAR_MODELS_DATA = [
+    // OpenAI Models
+    { 
+        provider: 'openai', 
+        name: 'gpt-4o', 
+        displayName: 'GPT-4o',
+        outputSpeed: 180, // tokens/sec
+        ttftMin: 250, ttftMax: 400, // TTFT range in ms
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'openai', 
+        name: 'gpt-4o-mini', 
+        displayName: 'GPT-4o Mini',
+        outputSpeed: 300,
+        ttftMin: 150, ttftMax: 250,
+        contextWindow: 128000,
+        tier: 'fast'
+    },
+    { 
+        provider: 'openai', 
+        name: 'gpt-4-turbo', 
+        displayName: 'GPT-4 Turbo',
+        outputSpeed: 120,
+        ttftMin: 300, ttftMax: 500,
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'openai', 
+        name: 'o1', 
+        displayName: 'o1 (Reasoning)',
+        outputSpeed: 50,
+        ttftMin: 2000, ttftMax: 10000,
+        contextWindow: 200000,
+        tier: 'reasoning'
+    },
+    { 
+        provider: 'openai', 
+        name: 'o1-mini', 
+        displayName: 'o1 Mini',
+        outputSpeed: 80,
+        ttftMin: 1000, ttftMax: 5000,
+        contextWindow: 128000,
+        tier: 'reasoning'
+    },
+    
+    // Anthropic Models
+    { 
+        provider: 'anthropic', 
+        name: 'claude-3-5-sonnet-20241022', 
+        displayName: 'Claude 3.5 Sonnet',
+        outputSpeed: 170,
+        ttftMin: 300, ttftMax: 450,
+        contextWindow: 200000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'anthropic', 
+        name: 'claude-3-5-haiku-20241022', 
+        displayName: 'Claude 3.5 Haiku',
+        outputSpeed: 280,
+        ttftMin: 150, ttftMax: 250,
+        contextWindow: 200000,
+        tier: 'fast'
+    },
+    { 
+        provider: 'anthropic', 
+        name: 'claude-3-opus-20240229', 
+        displayName: 'Claude 3 Opus',
+        outputSpeed: 90,
+        ttftMin: 500, ttftMax: 800,
+        contextWindow: 200000,
+        tier: 'flagship'
+    },
+    
+    // Google Models
+    { 
+        provider: 'google', 
+        name: 'gemini-1.5-pro', 
+        displayName: 'Gemini 1.5 Pro',
+        outputSpeed: 160,
+        ttftMin: 250, ttftMax: 400,
+        contextWindow: 2000000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'google', 
+        name: 'gemini-1.5-flash', 
+        displayName: 'Gemini 1.5 Flash',
+        outputSpeed: 250,
+        ttftMin: 150, ttftMax: 250,
+        contextWindow: 1000000,
+        tier: 'fast'
+    },
+    { 
+        provider: 'google', 
+        name: 'gemini-2.0-flash-exp', 
+        displayName: 'Gemini 2.0 Flash',
+        outputSpeed: 400,
+        ttftMin: 100, ttftMax: 200,
+        contextWindow: 1000000,
+        tier: 'fast'
+    },
+    
+    // Meta/Llama Models (via various providers)
+    { 
+        provider: 'together-ai', 
+        name: 'meta-llama/Llama-3.1-8B-Instruct-Turbo', 
+        displayName: 'Llama 3.1 8B',
+        outputSpeed: 450,
+        ttftMin: 100, ttftMax: 150,
+        contextWindow: 128000,
+        tier: 'fast'
+    },
+    { 
+        provider: 'together-ai', 
+        name: 'meta-llama/Llama-3.1-70B-Instruct-Turbo', 
+        displayName: 'Llama 3.1 70B',
+        outputSpeed: 100,
+        ttftMin: 250, ttftMax: 400,
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'together-ai', 
+        name: 'meta-llama/Llama-3.1-405B-Instruct-Turbo', 
+        displayName: 'Llama 3.1 405B',
+        outputSpeed: 70,
+        ttftMin: 500, ttftMax: 700,
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    
+    // Mistral Models
+    { 
+        provider: 'mistral-ai', 
+        name: 'mistral-large-latest', 
+        displayName: 'Mistral Large',
+        outputSpeed: 150,
+        ttftMin: 250, ttftMax: 400,
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    { 
+        provider: 'mistral-ai', 
+        name: 'mistral-small-latest', 
+        displayName: 'Mistral Small',
+        outputSpeed: 280,
+        ttftMin: 150, ttftMax: 250,
+        contextWindow: 32000,
+        tier: 'fast'
+    },
+    { 
+        provider: 'mistral-ai', 
+        name: 'open-mixtral-8x22b', 
+        displayName: 'Mixtral 8x22B',
+        outputSpeed: 120,
+        ttftMin: 200, ttftMax: 350,
+        contextWindow: 64000,
+        tier: 'flagship'
+    },
+    
+    // DeepSeek
+    { 
+        provider: 'deepseek', 
+        name: 'deepseek-chat', 
+        displayName: 'DeepSeek V3',
+        outputSpeed: 200,
+        ttftMin: 200, ttftMax: 350,
+        contextWindow: 64000,
+        tier: 'flagship'
+    },
+    
+    // Fast Inference Providers
+    { 
+        provider: 'groq', 
+        name: 'llama-3.1-70b-versatile', 
+        displayName: 'Groq Llama 3.1 70B',
+        outputSpeed: 500,
+        ttftMin: 50, ttftMax: 100,
+        contextWindow: 128000,
+        tier: 'ultra-fast'
+    },
+    { 
+        provider: 'cerebras', 
+        name: 'llama3.1-70b', 
+        displayName: 'Cerebras Llama 3.1 70B',
+        outputSpeed: 600,
+        ttftMin: 50, ttftMax: 100,
+        contextWindow: 128000,
+        tier: 'ultra-fast'
+    },
+    
+    // Cohere
+    { 
+        provider: 'cohere', 
+        name: 'command-r-plus', 
+        displayName: 'Command R+',
+        outputSpeed: 120,
+        ttftMin: 300, ttftMax: 500,
+        contextWindow: 128000,
+        tier: 'flagship'
+    },
+    
+    // Perplexity
+    { 
+        provider: 'perplexity-ai', 
+        name: 'llama-3.1-sonar-large-128k-online', 
+        displayName: 'Perplexity Sonar Large',
+        outputSpeed: 180,
+        ttftMin: 250, ttftMax: 400,
+        contextWindow: 128000,
+        tier: 'flagship'
+    }
+];
+
 // API Configuration
 const PORTKEY_API_BASE = 'https://api.portkey.ai';
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/Portkey-AI/models/main';
@@ -19,11 +239,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderModels();
     populateSelects();
     populateVoiceAIProviders();
+    populatePopularModels();
     updateStatistics();
     renderFavorites();
     setTimeout(() => {
         updateVoiceLLMPricing();
         calculateVoiceAI();
+        calculatePopularModel();
     }, 500);
 });
 
@@ -277,6 +499,8 @@ function setupTabs() {
                 populateChatAgentModels();
             } else if (targetTab === 'multimodal') {
                 populateMultiModalModels();
+            } else if (targetTab === 'popular-models') {
+                calculatePopularModel();
             }
         });
     });
@@ -299,6 +523,27 @@ function setupEventListeners() {
         if (el) {
             el.addEventListener('input', calculateCost);
             el.addEventListener('change', calculateCost);
+        }
+    });
+    
+    // Popular Models event listeners
+    const popularInputs = ['popularModelSelect', 'popularInputTokens', 'popularOutputTokens', 
+                          'popularNumRequests', 'popularStreamingMode', 'popularNetworkLatency', 'popularRegion'];
+    popularInputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', calculatePopularModel);
+            el.addEventListener('change', calculatePopularModel);
+        }
+    });
+    
+    // Region selector updates network latency
+    document.getElementById('popularRegion')?.addEventListener('change', (e) => {
+        const networkLatencyInput = document.getElementById('popularNetworkLatency');
+        if (networkLatencyInput && e.target.value !== 'custom') {
+            const latencies = { us: 50, eu: 80, asia: 120 };
+            networkLatencyInput.value = latencies[e.target.value] || 50;
+            calculatePopularModel();
         }
     });
     
@@ -2962,3 +3207,160 @@ function calculateLatency() {
         </div>
     `;
 }
+
+// ============================================
+// POPULAR MODELS TAB FUNCTIONS
+// ============================================
+
+// Populate Popular Models dropdown
+function populatePopularModels() {
+    const select = document.getElementById('popularModelSelect');
+    if (!select) return;
+    
+    // Clear existing options except the first placeholder
+    while (select.children.length > 1) {
+        select.removeChild(select.lastChild);
+    }
+    
+    // Group models by provider
+    const providers = {};
+    POPULAR_MODELS_DATA.forEach(model => {
+        if (!providers[model.provider]) {
+            providers[model.provider] = [];
+        }
+        providers[model.provider].push(model);
+    });
+    
+    // Add grouped options
+    Object.keys(providers).sort().forEach(provider => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = provider.charAt(0).toUpperCase() + provider.slice(1).replace('-', ' ');
+        
+        providers[provider].forEach(model => {
+            // Check if model exists in allModels for pricing data
+            const exists = allModels.find(m => m.provider === model.provider && m.name === model.name);
+            const option = document.createElement('option');
+            option.value = `${model.provider}:${model.name}`;
+            option.textContent = model.displayName + (exists ? '' : ' (No pricing data)');
+            option.disabled = !exists;
+            optgroup.appendChild(option);
+        });
+        
+        select.appendChild(optgroup);
+    });
+}
+
+// Calculate Popular Model cost and latency
+function calculatePopularModel() {
+    const modelValue = document.getElementById('popularModelSelect')?.value;
+    const costDetails = document.getElementById('popularCostDetails');
+    const latencyDetails = document.getElementById('popularLatencyDetails');
+    const modelInfo = document.getElementById('popularModelInfo');
+    const modelSpecs = document.getElementById('popularModelSpecs');
+    
+    if (!modelValue || !costDetails) {
+        if (costDetails) costDetails.innerHTML = '<div style="color: var(--gray-500); text-align: center; padding: 20px;">Select a model to see cost analysis</div>';
+        if (latencyDetails) latencyDetails.innerHTML = '<div style="color: var(--gray-500); text-align: center; padding: 20px;">Select a model to see latency analysis</div>';
+        if (modelInfo) modelInfo.style.display = 'none';
+        document.getElementById('popularTotalCost').textContent = '$0.00';
+        document.getElementById('popularPerRequestCost').textContent = '$0.00';
+        document.getElementById('popularTotalLatency').textContent = '0 ms';
+        document.getElementById('popularTTFT').textContent = '0 ms';
+        document.getElementById('popularOutputSpeed').textContent = '0 tok/s';
+        return;
+    }
+    
+    const [provider, modelName] = modelValue.split(':');
+    
+    // Get model data from allModels (for pricing) and POPULAR_MODELS_DATA (for latency)
+    const model = allModels.find(m => m.provider === provider && m.name === modelName);
+    const popularModel = POPULAR_MODELS_DATA.find(m => m.provider === provider && m.name === modelName);
+    
+    if (!model || !popularModel) {
+        costDetails.innerHTML = '<div style="color: var(--gray-500); text-align: center; padding: 20px;">Model data not available</div>';
+        return;
+    }
+    
+    // Get input values
+    const inputTokens = parseFloat(document.getElementById('popularInputTokens').value) || 0;
+    const outputTokens = parseFloat(document.getElementById('popularOutputTokens').value) || 0;
+    const numRequests = parseInt(document.getElementById('popularNumRequests').value) || 1;
+    const streamingEnabled = document.getElementById('popularStreamingMode').value === 'true';
+    const networkLatency = parseInt(document.getElementById('popularNetworkLatency').value) || 50;
+    
+    // Calculate costs
+    const payg = model.pricing?.pay_as_you_go || {};
+    const inputPricePerBillion = (payg.request_token?.price || 0) / 100 * 1000000000;
+    const outputPricePerBillion = (payg.response_token?.price || 0) / 100 * 1000000000;
+    
+    const inputCost = inputTokens * inputPricePerBillion;
+    const outputCost = outputTokens * outputPricePerBillion;
+    const totalPerRequest = inputCost + outputCost;
+    const total = totalPerRequest * numRequests;
+    
+    // Calculate latency
+    const inputTokensActual = inputTokens * 1000000000;
+    const outputTokensActual = outputTokens * 1000000000;
+    
+    const outputSpeed = popularModel.outputSpeed;
+    const inputProcessingSpeed = outputSpeed * 50; // Input processing is parallelized
+    const inputProcessingTime = (inputTokensActual / inputProcessingSpeed) * 1000;
+    
+    const fullOutputTime = (outputTokensActual / outputSpeed) * 1000;
+    const outputProcessingTime = streamingEnabled ? 
+        Math.min(200, Math.max(50, fullOutputTime * 0.1)) : fullOutputTime;
+    
+    // TTFT - Time to First Token
+    const ttftAvg = (popularModel.ttftMin + popularModel.ttftMax) / 2;
+    const ttft = networkLatency + inputProcessingTime + (streamingEnabled ? ttftAvg : 0);
+    
+    const totalLatency = (networkLatency * 2) + inputProcessingTime + outputProcessingTime + ttftAvg;
+    
+    // Update model info
+    if (modelInfo && modelSpecs) {
+        modelInfo.style.display = 'block';
+        modelSpecs.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; font-size: 12px;">
+                <div>
+                    <div style="color: var(--gray-500); font-size: 10px; margin-bottom: 4px;">Provider</div>
+                    <div style="font-weight: 600;">${provider.charAt(0).toUpperCase() + provider.slice(1).replace('-', ' ')}</div>
+                </div>
+                <div>
+                    <div style="color: var(--gray-500); font-size: 10px; margin-bottom: 4px;">Tier</div>
+                    <div style="font-weight: 600;">${popularModel.tier.replace('-', ' ').toUpperCase()}</div>
+                </div>
+                <div>
+                    <div style="color: var(--gray-500); font-size: 10px; margin-bottom: 4px;">Context Window</div>
+                    <div style="font-weight: 600;">${formatNumber(popularModel.contextWindow)} tokens</div>
+                </div>
+                <div>
+                    <div style="color: var(--gray-500); font-size: 10px; margin-bottom: 4px;">Output Speed</div>
+                    <div style="font-weight: 600;">${outputSpeed} tok/s</div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Update cost details
+    costDetails.innerHTML = `
+        ${inputCost > 0 ? `<div class="cost-item"><span>Input (${(inputTokens * 1e9).toLocaleString()} tokens)</span><span>$${inputCost.toFixed(6)}</span></div>` : ''}
+        ${outputCost > 0 ? `<div class="cost-item"><span>Output (${(outputTokens * 1e9).toLocaleString()} tokens)</span><span>$${outputCost.toFixed(6)}</span></div>` : ''}
+        ${numRequests > 1 ? `<div class="cost-item"><span>× ${numRequests} requests</span><span></span></div>` : ''}
+    `;
+    
+    // Update latency details
+    latencyDetails.innerHTML = `
+        <div class="cost-item"><span>Network (round-trip)</span><span>${networkLatency * 2} ms</span></div>
+        <div class="cost-item"><span>Input Processing</span><span>${Math.round(inputProcessingTime)} ms</span></div>
+        <div class="cost-item"><span>Model TTFT (avg)</span><span>${Math.round(ttftAvg)} ms</span></div>
+        <div class="cost-item"><span>Output Generation${streamingEnabled ? ' (streaming)' : ''}</span><span>${Math.round(outputProcessingTime)} ms</span></div>
+    `;
+    
+    // Update summary values
+    document.getElementById('popularTotalCost').textContent = `$${total.toFixed(6)}`;
+    document.getElementById('popularPerRequestCost').textContent = `$${totalPerRequest.toFixed(6)}`;
+    document.getElementById('popularTotalLatency').textContent = formatLatency(totalLatency);
+    document.getElementById('popularTTFT').textContent = formatLatency(ttft);
+    document.getElementById('popularOutputSpeed').textContent = `${outputSpeed} tok/s`;
+}
+

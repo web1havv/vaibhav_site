@@ -1161,3 +1161,15 @@ select:focus-visible {
 .animate-slide {
     animation: slideUp 0.6s var(--ease-out);
 }
+
+/* ============================================
+   POPULAR MODELS TAB
+   ============================================ */
+.popular-model-card {
+    transition: all 0.3s var(--ease-out);
+}
+
+.popular-model-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
