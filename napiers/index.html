@@ -182,17 +182,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="model-detail-section">
-                        <h3>Additional Options</h3>
-                        <div class="input-group">
-                            <label>Enable Streaming</label>
-                            <input type="checkbox" id="enableStreaming" checked style="width: auto; margin-top: 8px;">
-                            <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">Streaming delivers tokens progressively</div>
-                        </div>
-                        <!-- Hidden inputs for latency (kept for compatibility) -->
-                        <input type="hidden" id="networkLatency" value="50">
-                        <input type="hidden" id="processingSpeed" value="100">
-                    </div>
+                    <!-- Hidden inputs for latency calculations (kept for compatibility) -->
+                    <input type="hidden" id="networkLatency" value="50">
+                    <input type="hidden" id="processingSpeed" value="100">
+                    <input type="hidden" id="enableStreaming" checked>
                 </div>
                 <!-- Right: Results -->
                 <div>
