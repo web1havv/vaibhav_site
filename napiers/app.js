@@ -667,52 +667,78 @@ function formatPrice(price) {
 }
 
 // Get model-specific processing speed (tokens/sec) based on model characteristics
+// Updated for 2026 performance benchmarks
 function getModelProcessingSpeed(modelName) {
     const name = modelName.toLowerCase();
     
-    // Fast models (100+ tok/s)
-    if (name.includes('gpt-3.5') || name.includes('claude-instant') || name.includes('gpt-4o-mini')) {
+    // Ultra-fast models (300+ tok/s) - 2026 optimized
+    if (name.includes('gemini-2') || name.includes('gemini-2.0-flash')) {
+        return 400;
+    }
+    if (name.includes('gpt-4o-mini') || name.includes('gpt-4.1-mini')) {
+        return 300;
+    }
+    if (name.includes('claude-3-5-haiku') || name.includes('claude-3.5-haiku') || name.includes('claude-instant')) {
+        return 280;
+    }
+    
+    // Very fast models (200-300 tok/s)
+    if (name.includes('gemini-1.5-flash') || name.includes('gemini-flash')) {
+        return 250;
+    }
+    if (name.includes('gpt-3.5') || name.includes('gpt-4.1-nano')) {
+        return 250;
+    }
+    if (name.includes('llama-3.1-8b') || name.includes('llama-3-8b') || name.includes('llama-3.2-3b')) {
+        return 450;
+    }
+    if (name.includes('mistral-7b') || name.includes('mixtral-8x7b')) {
+        return 350;
+    }
+    
+    // Fast models (150-200 tok/s)
+    if (name.includes('gpt-4o') || name.includes('gpt-4.1')) {
+        return 180;
+    }
+    if (name.includes('claude-3.5-sonnet') || name.includes('claude-3-5-sonnet') || name.includes('claude-sonnet-4')) {
+        return 170;
+    }
+    if (name.includes('gemini-1.5-pro') || name.includes('gemini-pro') || name.includes('gemini-2.0-pro')) {
+        return 160;
+    }
+    
+    // Medium-fast models (100-150 tok/s)
+    if (name.includes('claude-3-sonnet')) {
+        return 140;
+    }
+    if (name.includes('gpt-4-turbo') || name.includes('gpt-4-0125')) {
         return 120;
     }
-    if (name.includes('llama-3.1-8b') || name.includes('llama-3-8b') || name.includes('mistral-7b')) {
-        return 150;
-    }
-    if (name.includes('gemini-1.5-flash') || name.includes('gemini-flash')) {
-        return 130;
+    if (name.includes('llama-3.1-70b') || name.includes('llama-3-70b')) {
+        return 100;
     }
     
-    // Medium-fast models (70-100 tok/s)
-    if (name.includes('gpt-4o') || name.includes('claude-3.5') || name.includes('claude-3-5')) {
+    // Medium models (70-100 tok/s)
+    if (name.includes('gpt-4') || name.includes('claude-3-opus') || name.includes('claude-opus-4')) {
         return 90;
     }
-    if (name.includes('gemini-1.5-pro') || name.includes('gemini-pro')) {
-        return 80;
-    }
-    if (name.includes('claude-3-sonnet') || name.includes('claude-3-haiku')) {
-        return 85;
+    if (name.includes('llama-3.1-405b') || name.includes('llama-405b')) {
+        return 70;
     }
     
-    // Medium models (50-70 tok/s)
-    if (name.includes('gpt-4') || name.includes('claude-3-opus')) {
+    // Slower/older models (40-70 tok/s)
+    if (name.includes('claude-v1') || name.includes('claude-v2')) {
         return 60;
     }
-    if (name.includes('llama-3.1-70b') || name.includes('llama-3-70b')) {
+    if (name.includes('j2-') || name.includes('jurassic')) {
         return 50;
     }
-    
-    // Slower/older models (30-50 tok/s)
-    if (name.includes('claude-v1') || name.includes('claude-v2') || name.includes('claude-instant-v1')) {
-        return 40;
-    }
-    if (name.includes('j2-') || name.includes('jurassic')) {
-        return 35;
-    }
     if (name.includes('llama-2') || name.includes('llama2')) {
-        return 45;
+        return 70;
     }
     
-    // Default for unknown models
-    return 50;
+    // Default for unknown models (conservative 2026 estimate)
+    return 100;
 }
 
 function formatPricePer1K(price) {
@@ -2685,24 +2711,30 @@ function calculateLatency() {
         // The model files (models/pricing/ and models/general/) do NOT contain latency data
         // These values are based on typical real-time factors and known model performance characteristics
         // TODO: Consider adding latency data to model files or fetching from external benchmarks
+        // 2026 STT latencies - significantly improved
         const sttLatencies = {
-            // OpenAI models
-            'whisper-1': 400,
-            'whisper-v3': 400,
-            'whisper-large-v3': 450,
-            'gpt-4o-transcribe': 250, // Faster than Whisper
-            'gpt-4o-mini-transcribe': 200, // Fastest OpenAI option
-            'gpt-4o-transcribe-diarize': 280, // Slightly slower due to diarization
-            // Deepgram models (known for low latency)
-            'deepgram-nova-3': 200, // Fast, real-time optimized
-            'deepgram-nova-3-multilingual': 250, // Slightly slower for multilingual
-            // Google models
-            'google-chirp-2': 300,
+            // OpenAI models (2026)
+            'whisper-1': 300,
+            'whisper-v3': 280,
+            'whisper-large-v3': 320,
+            'gpt-4o-transcribe': 150, // Much faster in 2026
+            'gpt-4o-mini-transcribe': 120, // Fastest OpenAI option
+            'gpt-4o-transcribe-diarize': 180, // With speaker identification
+            // Deepgram models (2026 - industry leader in speed)
+            'deepgram-nova-3': 100, // Real-time optimized
+            'deepgram-nova-3-multilingual': 130,
+            'deepgram-nova-2': 120,
+            // Google models (2026)
+            'google-chirp-2': 180,
+            'google-chirp-3': 140, // Newer model
+            // AssemblyAI (2026)
+            'assemblyai-universal': 150,
             // Provider-based fallbacks
-            'openai': 350,
-            'azure-openai': 350,
-            'deepgram': 200,
-            'google': 300
+            'openai': 200,
+            'azure-openai': 200,
+            'deepgram': 100,
+            'google': 160,
+            'assemblyai': 150
         };
         
         // Try model name first, then provider, then default
@@ -2719,28 +2751,8 @@ function calculateLatency() {
         const [llmProv, llmModel] = llmProvider.split(':');
         const llmModelData = allModels.find(m => m.provider === llmProv && m.name === llmModel);
         
-        // Estimate processing speed based on model (tokens per second)
-        // NOTE: These are HARDCODED ESTIMATES, not from model data files
-        // The model files do NOT contain processing speed/latency data
-        // Fast models: 100+ tokens/sec, Medium: 50-100, Slow: <50
-        // TODO: Consider adding processing speed data to model files or fetching from external benchmarks
-        let processingSpeed = 50; // Default tokens/sec (conservative estimate for unknown models)
-        if (llmModelData) {
-            const modelName = llmModel.toLowerCase();
-            if (modelName.includes('gpt-4o') || modelName.includes('claude-3.5') || modelName.includes('claude-3-opus')) {
-                processingSpeed = 80;
-            } else if (modelName.includes('gpt-4') || modelName.includes('claude-3')) {
-                processingSpeed = 60;
-            } else if (modelName.includes('gpt-3.5') || modelName.includes('claude-instant') || modelName.includes('gpt-4o-mini')) {
-                processingSpeed = 100;
-            } else if (modelName.includes('llama-3.1-8b') || modelName.includes('llama-3-8b')) {
-                processingSpeed = 120;
-            } else if (modelName.includes('llama-3.1-70b') || modelName.includes('llama-3-70b')) {
-                processingSpeed = 40;
-            } else if (modelName.includes('gemini-pro') || modelName.includes('gemini-1.5')) {
-                processingSpeed = 70;
-            }
-        }
+        // Use shared getModelProcessingSpeed function for consistent 2026 estimates
+        const processingSpeed = getModelProcessingSpeed(llmModel);
         
         // Calculate LLM latency for a SINGLE turn: input processing + output processing (streaming first token)
         // Note: We use per-turn tokens, not total conversation tokens
@@ -2775,20 +2787,33 @@ function calculateLatency() {
         // The model files (models/pricing/ and models/general/) do NOT contain latency data
         // These values are based on typical TTS generation times and known model performance
         // TODO: Consider adding latency data to model files or fetching from external benchmarks
+        // 2026 TTS latencies - much faster with new models
         const ttsLatencies = {
-            // OpenAI models
-            'tts-1': 150, // Standard quality
-            'tts-1-hd': 200, // Higher quality, slower
-            'gpt-4o-mini-tts': 100, // Fast
-            // Manual entries (2026 pricing models)
-            'elevenlabs-flash-v2.5': 80, // Very fast, optimized for low latency
-            'cartesia-sonic': 90, // Fast
-            'google-tts-standard': 120,
-            'google-tts-wavenet': 180, // Higher quality, slower
+            // OpenAI models (2026)
+            'tts-1': 100,
+            'tts-1-hd': 140,
+            'gpt-4o-mini-tts': 60, // Very fast
+            'gpt-4o-tts': 80,
+            // ElevenLabs (2026 - industry leader)
+            'elevenlabs-flash-v2.5': 50, // Ultra-low latency
+            'elevenlabs-turbo-v2.5': 40, // Fastest available
+            'elevenlabs-multilingual-v2': 70,
+            // Cartesia (2026)
+            'cartesia-sonic': 55,
+            'cartesia-sonic-2': 45,
+            // Google (2026)
+            'google-tts-standard': 90,
+            'google-tts-wavenet': 120,
+            'google-tts-neural2': 80,
+            // PlayHT (2026)
+            'playht-turbo': 60,
             // Provider-based fallbacks
-            'openai': 150,
-            'azure-openai': 150,
-            'google': 150
+            'openai': 100,
+            'azure-openai': 100,
+            'google': 90,
+            'elevenlabs': 50,
+            'cartesia': 50,
+            'playht': 60
         };
         
         // Try model name first, then provider, then default
