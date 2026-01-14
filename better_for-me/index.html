@@ -32,38 +32,35 @@
                         <p class="subtitle" style="margin-top: 4px;">Calculate costs, latency, and optimize your AI usage across 2,000+ models</p>
                     </div>
                 </div>
-                <div style="text-align: right;">
-                    <p style="font-size: 11px; color: var(--white); font-style: italic;">created with ❤️ by webhavvv</p>
+                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                    <button class="btn" onclick="switchToTab('documentation')" style="font-size: 10px; padding: 8px 16px;">Documentation</button>
+                    <p style="font-size: 11px; color: var(--gray-500); font-style: italic; letter-spacing: 0.5px;">crafted by webhavvv</p>
                 </div>
             </div>
-            <p style="font-size: 12px; color: var(--white); font-weight: 600; margin-top: 16px; text-transform: uppercase; letter-spacing: 0.5px;">Input & Output tokens are in billions (1B tokens). Prices shown per 1 billion tokens (1B tokens)</p>
-            <p style="font-size: 11px; color: var(--white); margin-top: 4px;">Context Window = Maximum tokens a model can process in one request (input + output)</p>
         </header>
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="calculator">Calculator</button>
+            <button class="tab-btn active" data-tab="calculator">Cost Calculator</button>
             <button class="tab-btn" data-tab="voice">Voice AI</button>
+            <button class="tab-btn" data-tab="popular-models">Latency Calculator</button>
             <button class="tab-btn" data-tab="explorer">Explorer</button>
             <button class="tab-btn" data-tab="compare">Compare</button>
             <button class="tab-btn" data-tab="batch">Batch</button>
             <button class="tab-btn" data-tab="optimizer">Optimizer</button>
             <button class="tab-btn" data-tab="statistics">Statistics</button>
             <button class="tab-btn" data-tab="favorites">Favorites</button>
-            <button class="tab-btn" data-tab="chat-agent">Chat Agent</button>
-            <button class="tab-btn" data-tab="multimodal">Multi-Modal</button>
+            <!-- <button class="tab-btn" data-tab="chat-agent">Chat Agent</button> -->
+            <!-- <button class="tab-btn" data-tab="multimodal">Multi-Modal</button> -->
             <button class="tab-btn" data-tab="documentation">Documentation</button>
         </div>
 
         <!-- Model Explorer Tab -->
         <div id="explorer" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
-            </div>
             <div style="max-width: 1200px; margin: 0 auto;">
-                <div style="border: 2px solid var(--white); padding: 40px; margin-bottom: 30px; text-align: center;">
-                    <h2 style="font-size: 20px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">Select Filters to Explore Models</h2>
-                    <p style="font-size: 12px; color: var(--white); margin-bottom: 24px;">Choose at least one filter to view models. This helps you find exactly what you need.</p>
+                <div class="section-header" style="text-align: center;">
+                    <h2>Model Explorer</h2>
+                    <p>Browse and filter through 2,000+ AI models across all providers. Search by name, type, features, or price to find the perfect model for your use case. Export your findings as CSV or JSON.</p>
                 </div>
                 
                 <div class="search-filters">
@@ -122,13 +119,129 @@
             </div>
         </div>
 
+        <!-- Latency Calculator Tab -->
+        <div id="popular-models" class="tab-content">
+            <div class="section-header">
+                <h2>Latency Calculator</h2>
+                <p>Estimate response times for popular LLM models. Understand Time to First Token (TTFT), output speed, and total request latency to optimize your application's user experience.</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <!-- Left: Model Selection & Input -->
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Select Popular Model</h3>
+                        <div class="input-group">
+                            <label>Model</label>
+                            <select id="popularModelSelect">
+                                <option value="">Select a popular model...</option>
+                            </select>
+                        </div>
+                        <div id="popularModelInfo" style="margin-top: 16px; padding: 16px; background: var(--accent-dim); border: 1px solid var(--border-subtle); border-radius: 8px; display: none;">
+                            <div style="font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;">Model Specifications</div>
+                            <div id="popularModelSpecs"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Usage Parameters</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Input Tokens (in billions)</label>
+                                <input type="number" id="popularInputTokens" value="0.000001" min="0" step="0.000001">
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">0.000001 = 1,000 tokens</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Output Tokens (in billions)</label>
+                                <input type="number" id="popularOutputTokens" value="0.0000005" min="0" step="0.0000001">
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">0.0000005 = 500 tokens</div>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Number of Requests</label>
+                                <input type="number" id="popularNumRequests" value="1" min="1">
+                            </div>
+                            <div class="input-group">
+                                <label>Streaming Mode</label>
+                                <select id="popularStreamingMode">
+                                    <option value="true">Enabled (Recommended)</option>
+                                    <option value="false">Disabled</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="model-detail-section">
+                        <h3>Network Settings</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Network Latency (ms)</label>
+                                <input type="number" id="popularNetworkLatency" value="50" min="0" step="10">
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">One-way latency to API</div>
+                            </div>
+                            <div class="input-group">
+                                <label>Region</label>
+                                <select id="popularRegion">
+                                    <option value="us">US (50ms)</option>
+                                    <option value="eu">Europe (80ms)</option>
+                                    <option value="asia">Asia (120ms)</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Results -->
+                <div>
+                    <div class="calc-result" style="margin-bottom: 20px;">
+                        <div class="cost-breakdown">
+                            <h3>Cost Analysis</h3>
+                            <div id="popularCostDetails"></div>
+                            <div class="total-cost">
+                                <span class="label">Total Cost</span>
+                                <span id="popularTotalCost" class="amount">$0.00</span>
+                            </div>
+                            <div class="total-cost" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--white);">
+                                <span class="label">Per Request</span>
+                                <span id="popularPerRequestCost" class="amount" style="font-size: 20px;">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="calc-result">
+                        <div class="cost-breakdown">
+                            <h3>Latency Analysis</h3>
+                            <div id="popularLatencyDetails"></div>
+                            <div class="total-cost">
+                                <span class="label">Total Latency</span>
+                                <span id="popularTotalLatency" class="amount">0 ms</span>
+                            </div>
+                            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                                    <div>
+                                        <div style="font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;">Time to First Token</div>
+                                        <div id="popularTTFT" style="font-size: 18px; font-weight: 700; font-family: 'IBM Plex Mono', monospace;">0 ms</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px;">Output Speed</div>
+                                        <div id="popularOutputSpeed" style="font-size: 18px; font-weight: 700; font-family: 'IBM Plex Mono', monospace;">0 tok/s</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
         <!-- Cost Calculator Tab -->
         <div id="calculator" class="tab-content active">
-            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
-                <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Cost Calculator</h2>
-                    <p style="font-size: 12px; color: var(--white);">Calculate exact costs, latency, and visualize token usage for any LLM model</p>
-                </div>
+            <div class="section-header">
+                <h2>Cost Calculator</h2>
+                <p>Calculate precise API costs for any LLM model. Input your token usage, cache settings, and additional features to get accurate cost breakdowns. Perfect for budgeting and comparing model economics.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
                 <!-- Left: Inputs -->
@@ -145,12 +258,12 @@
                             <div class="input-group">
                                 <label>Input Tokens (in billions)</label>
                                 <input type="number" id="inputTokens" value="0.000001" min="0" step="0.000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.000001 = 1,000 tokens, typical for small requests)</div>
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">0.000001 = 1,000 tokens</div>
                             </div>
                             <div class="input-group">
                                 <label>Output Tokens (in billions)</label>
                                 <input type="number" id="outputTokens" value="0.0000005" min="0" step="0.0000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000005 = 500 tokens, typical for small responses)</div>
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">0.0000005 = 500 tokens</div>
                             </div>
                         </div>
                         <div class="input-row">
@@ -184,25 +297,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="model-detail-section">
-                        <h3>Latency Settings</h3>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Network Latency (ms)</label>
-                                <input type="number" id="networkLatency" value="50" min="0" step="1">
-                            </div>
-                            <div class="input-group">
-                                <label>Processing Speed (tokens/sec)</label>
-                                <input type="number" id="processingSpeed" value="100" min="1" step="10">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">GPT-4o: ~100-150, Claude 3.5: ~80, GPT-4o-mini: ~150+</div>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Enable Streaming</label>
-                            <input type="checkbox" id="enableStreaming" checked style="width: auto; margin-top: 8px;">
-                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Streaming reduces perceived latency</div>
-                        </div>
-                    </div>
+                    <!-- Hidden inputs for latency calculations (kept for compatibility) -->
+                    <input type="hidden" id="networkLatency" value="50">
+                    <input type="hidden" id="processingSpeed" value="100">
+                    <input type="hidden" id="enableStreaming" checked>
                 </div>
                 <!-- Right: Results -->
                 <div>
@@ -220,11 +318,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="stat-card" style="margin-bottom: 20px; border: 1px solid var(--white); padding: 24px;">
-                        <h3 style="margin-bottom: 16px; font-size: 12px;">Estimated Latency</h3>
-                        <div class="stat-value" id="estimatedLatency" style="font-size: 42px; margin-bottom: 8px;">0 ms</div>
-                        <div class="stat-label" id="latencyStatus" style="margin-top: 8px;">-</div>
-                        <div id="latencyBreakdownCalc" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--white);"></div>
+                    <!-- Hidden elements for latency (kept for compatibility) -->
+                    <div style="display: none;">
+                        <span id="estimatedLatency">0 ms</span>
+                        <span id="latencyStatus">-</span>
+                        <div id="latencyBreakdownCalc"></div>
                     </div>
                     <div style="margin-top: 20px; display: flex; gap: 12px;">
                         <button class="btn" onclick="exportCalculation('csv')">Export CSV</button>
@@ -255,8 +353,9 @@
 
         <!-- Batch Calculator Tab -->
         <div id="batch" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Batch Calculator</h2>
+                <p>Calculate costs for multiple models or requests at once. Input a JSON array of usage scenarios to get aggregate cost analysis. Ideal for comparing multi-model workflows or projecting monthly expenses.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
                 <div>
@@ -310,59 +409,59 @@
 
         <!-- Compare Models Tab -->
         <div id="compare" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Compare Models</h2>
+                <p>Head-to-head comparison of any two LLM models. Analyze cost differences, latency trade-offs, and feature gaps to make informed decisions about model selection for your projects.</p>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                <div>
-                    <div class="model-detail-section" style="margin-bottom: 20px;">
-                        <h3>Model Selection</h3>
-                        <div class="compare-selector" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="compare-item">
-                                <label>Model 1</label>
-                                <select id="compareModel1">
-                                    <option value="">Select model...</option>
-                                </select>
-                            </div>
-                            <div class="compare-item">
-                                <label>Model 2</label>
-                                <select id="compareModel2">
-                                    <option value="">Select model...</option>
-                                </select>
-                            </div>
-                        </div>
+            
+            <!-- Model Selection Row -->
+            <div class="model-detail-section" style="margin-bottom: 30px;">
+                <h3>Select Models to Compare</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div class="input-group">
+                        <label>Model 1</label>
+                        <select id="compareModel1" style="width: 100%;">
+                            <option value="">Select first model...</option>
+                        </select>
                     </div>
-                    <div class="model-detail-section">
-                        <h3>Test Parameters</h3>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Input Tokens (in billions)</label>
-                                <input type="number" id="compareInputTokens" value="0.000001" min="0" step="0.000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions</div>
-                            </div>
-                            <div class="input-group">
-                                <label>Output Tokens (in billions)</label>
-                                <input type="number" id="compareOutputTokens" value="0.0000005" min="0" step="0.0000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions</div>
-                            </div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Number of Requests</label>
-                                <input type="number" id="compareNumRequests" value="100" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label>Processing Speed (tokens/sec)</label>
-                                <input type="number" id="compareProcessingSpeed" value="100" min="1" step="10">
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary" onclick="compareModels()" style="margin-top: 10px; width: 100%;">Compare Models</button>
+                    <div class="input-group">
+                        <label>Model 2</label>
+                        <select id="compareModel2" style="width: 100%;">
+                            <option value="">Select second model...</option>
+                        </select>
                     </div>
                 </div>
-                <div>
-                    <div id="comparisonResult" class="comparison-result">
-                        <p class="placeholder">Select two models to compare</p>
+            </div>
+            
+            <!-- Test Parameters -->
+            <div class="model-detail-section" style="margin-bottom: 30px;">
+                <h3>Test Parameters</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+                    <div class="input-group">
+                        <label>Input Tokens (billions)</label>
+                        <input type="number" id="compareInputTokens" value="0.000001" min="0" step="0.000001">
                     </div>
+                    <div class="input-group">
+                        <label>Output Tokens (billions)</label>
+                        <input type="number" id="compareOutputTokens" value="0.0000005" min="0" step="0.0000001">
+                    </div>
+                    <div class="input-group">
+                        <label>Number of Requests</label>
+                        <input type="number" id="compareNumRequests" value="100" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label>Processing Speed (tok/s)</label>
+                        <input type="number" id="compareProcessingSpeed" value="100" min="1" step="10">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="compareModels()" style="margin-top: 20px;">Compare Models</button>
+            </div>
+            
+            <!-- Comparison Results -->
+            <div id="comparisonResult" class="comparison-result" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; min-height: 300px;">
+                <div class="placeholder" style="grid-column: span 2; padding: 80px 20px; text-align: center;">
+                    <div style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">Select two models to compare</div>
+                    <div style="font-size: 12px; color: var(--gray-500);">Choose models from the dropdowns above</div>
                 </div>
             </div>
             <div id="comparisonCharts" style="display: none; margin-top: 40px;">
@@ -384,8 +483,9 @@
 
         <!-- Statistics Tab -->
         <div id="statistics" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Statistics</h2>
+                <p>Get a bird's-eye view of the AI model landscape. See aggregate pricing data, provider breakdowns, and discover the cheapest and most expensive models across the entire database.</p>
             </div>
             <div class="stats-grid" id="statsGrid">
                 <div class="stat-card">
@@ -438,8 +538,9 @@
 
         <!-- Favorites Tab -->
         <div id="favorites" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Favorites</h2>
+                <p>Your saved models for quick access. Star any model from the Explorer or other tabs to add it here. Export your favorites list or clear selections to start fresh.</p>
             </div>
             <div class="stats-bar">
                 <span id="favoritesCount">0 favorites</span>
@@ -455,8 +556,9 @@
 
         <!-- Optimizer Tab -->
         <div id="optimizer" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Model Optimizer</h2>
+                <p>Find the best model for your specific needs. Input your use case, expected token volumes, budget constraints, and required features—get personalized recommendations with cost savings analysis.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
                 <div>
@@ -479,12 +581,12 @@
                             <div class="input-group">
                                 <label>Expected Input Tokens (in billions)</label>
                                 <input type="number" id="optInputTokens" value="0.01" min="0" step="0.001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.01 = 10M monthly)</div>
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">Enter tokens in billions (0.01 = 10M monthly)</div>
                             </div>
                             <div class="input-group">
                                 <label>Expected Output Tokens (in billions)</label>
                                 <input type="number" id="optOutputTokens" value="0.005" min="0" step="0.001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.005 = 5M monthly)</div>
+                                <div style="font-size: 10px; color: var(--gray-500); margin-top: 4px;">Enter tokens in billions (0.005 = 5M monthly)</div>
                             </div>
                         </div>
                         <div class="input-row">
@@ -549,14 +651,9 @@
 
         <!-- Voice AI Calculator Tab -->
         <div id="voice" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
-            </div>
-            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
-                <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Voice AI Calculator</h2>
-                    <p style="font-size: 12px; color: var(--white);">Calculate complete voice AI costs including transcription, LLM, TTS, hosting, and latency breakdown</p>
-                </div>
+            <div class="section-header">
+                <h2>Voice AI Calculator</h2>
+                <p>Calculate end-to-end costs for voice AI applications. Includes Speech-to-Text (STT), LLM processing, Text-to-Speech (TTS), and infrastructure costs. Get complete latency breakdowns for real-time voice experiences.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
                 <!-- Left: Inputs -->
@@ -605,12 +702,12 @@
                             <div class="input-group">
                                 <label>Transcription Cost/Min</label>
                                 <input type="number" id="transcriptionCost" value="0.006" step="0.000001" min="0">
-                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;" id="sttPriceDisplay">Auto-calculated</div>
+                                <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;" id="sttPriceDisplay">Auto-calculated</div>
                             </div>
                             <div class="input-group">
                                 <label>Voice Cost/Character</label>
                                 <input type="number" id="voiceCost" value="0.000015" step="0.000000001" min="0">
-                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;" id="ttsPriceDisplay">Auto-calculated from TTS model</div>
+                                <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;" id="ttsPriceDisplay">Auto-calculated from TTS model</div>
                             </div>
                         </div>
                         <div class="input-row">
@@ -630,7 +727,7 @@
                         <div class="input-group">
                             <label>Conversation Length</label>
                             <input type="number" id="convoLength" value="15" min="1">
-                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">minutes</div>
+                            <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">minutes</div>
                         </div>
                         <div class="input-row">
                             <div class="input-group">
@@ -656,12 +753,12 @@
                         <div class="input-group">
                             <label>LLM Speech Ratio</label>
                             <input type="number" id="llmSpeechRatio" value="0.5" step="0.1" min="0" max="1">
-                            <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Ratio of LLM speech vs user (0-1)</div>
+                            <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">Ratio of LLM speech vs user (0-1)</div>
                             </div>
                             <div class="input-group">
                                 <label>Context Window (turns)</label>
                                 <input type="number" id="contextWindowTurns" value="10" min="1" max="100">
-                                <div style="font-size: 11px; color: var(--white); margin-top: 4px;">Max turns in context (sliding window)</div>
+                                <div style="font-size: 11px; color: var(--gray-500); margin-top: 4px;">Max turns in context (sliding window)</div>
                             </div>
                         </div>
                     </div>
@@ -789,184 +886,32 @@
             </div>
         </div>
 
-        <!-- Chat Agent Calculator Tab -->
+        <!-- Chat Agent Calculator Tab - COMMENTED OUT
         <div id="chat-agent" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Chat Agent Calculator</h2>
+                <p>Calculate costs for conversational AI agents with multiple turns and context management</p>
             </div>
-            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
-                <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Chat Agent Calculator</h2>
-                    <p style="font-size: 12px; color: var(--white);">Calculate costs for conversational AI agents with multiple turns and context</p>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                <div>
-                    <div class="model-detail-section" style="margin-bottom: 20px;">
-                        <h3>Agent Configuration</h3>
-                        <div class="input-group">
-                            <label>LLM Model</label>
-                            <select id="chatAgentModel">
-                                <option value="">Select model...</option>
-                            </select>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Conversation Sessions/Day</label>
-                                <input type="number" id="chatSessionsPerDay" value="1000" min="1">
-                            </div>
-                            <div class="input-group">
-                                <label>Avg Turns Per Session</label>
-                                <input type="number" id="chatTurnsPerSession" value="10" min="1">
-                            </div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Avg Input Tokens/Turn (in billions)</label>
-                                <input type="number" id="chatInputPerTurn" value="0.00000015" min="0.00000001" step="0.00000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.00000015 = 150 tokens)</div>
-                            </div>
-                            <div class="input-group">
-                                <label>Avg Output Tokens/Turn (in billions)</label>
-                                <input type="number" id="chatOutputPerTurn" value="0.0000001" min="0.00000001" step="0.00000001">
-                                <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000001 = 100 tokens)</div>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Context Accumulation</label>
-                            <select id="chatContextMode">
-                                <option value="full">Full Context (all previous turns)</option>
-                                <option value="sliding">Sliding Window (last N turns)</option>
-                                <option value="summary">Summary-based (summarized context)</option>
-                            </select>
-                        </div>
-                        <div class="input-group" id="chatSlidingWindowGroup" style="display: none;">
-                            <label>Sliding Window Size</label>
-                            <input type="number" id="chatSlidingWindow" value="5" min="1">
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" onclick="calculateChatAgent()" style="width: 100%; margin-top: 10px;">Calculate Chat Agent Cost</button>
-                </div>
-                <div>
-                    <div class="calc-result" style="margin-bottom: 20px;">
-                        <div class="cost-breakdown">
-                            <h3>Cost Analysis</h3>
-                            <div id="chatAgentResults">
-                                <div class="placeholder" style="padding: 40px; text-align: center;">
-                                    <div style="font-size: 14px; margin-bottom: 8px;">Enter parameters and click Calculate</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card" style="border: 2px solid var(--white); padding: 24px;">
-                        <h3 style="margin-bottom: 16px; font-size: 12px;">Daily Statistics</h3>
-                        <div id="chatAgentStats"></div>
-                    </div>
-                </div>
-            </div>
-            <div id="chatAgentCharts" style="display: none; margin-top: 40px;">
-                <div class="model-detail-section">
-                    <h3>Visualizations</h3>
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
-                        <div style="border: 1px solid var(--white); padding: 20px;">
-                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Per Session</h4>
-                            <div id="chatSessionChart" style="height: 200px;"></div>
-                        </div>
-                        <div style="border: 1px solid var(--white); padding: 20px;">
-                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Token Growth</h4>
-                            <div id="chatTokenChart" style="height: 200px;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            ...
         </div>
+        -->
 
-        <!-- Multi-Modal Calculator Tab -->
+        <!-- Multi-Modal Calculator Tab - COMMENTED OUT
         <div id="multimodal" class="tab-content">
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
-                <button class="btn" onclick="switchToTab('documentation')" style="font-size: 11px; padding: 8px 16px; text-transform: uppercase;">📖 Documentation</button>
+            <div class="section-header">
+                <h2>Multi-Modal Calculator</h2>
+                <p>Calculate costs for workflows combining text, images, audio, and video inputs</p>
             </div>
-            <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
-                <div style="margin-bottom: 20px;">
-                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Multi-Modal Calculator</h2>
-                    <p style="font-size: 12px; color: var(--white);">Calculate costs for workflows combining text, images, audio, and video</p>
-                </div>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                <div>
-                    <div class="model-detail-section" style="margin-bottom: 20px;">
-                        <h3>Input Modalities</h3>
-                        <div class="input-group">
-                            <label>Text Input (tokens in billions)</label>
-                            <input type="number" id="multiTextTokens" value="0.000001" min="0" step="0.000001">
-                            <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.000001 = 1K tokens)</div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Images</label>
-                                <input type="number" id="multiNumImages" value="0" min="0">
-                            </div>
-                            <div class="input-group">
-                                <label>Image Resolution</label>
-                                <select id="multiImageRes">
-                                    <option value="512">512x512</option>
-                                    <option value="1024" selected>1024x1024</option>
-                                    <option value="2048">2048x2048</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="input-row">
-                            <div class="input-group">
-                                <label>Audio Duration (seconds)</label>
-                                <input type="number" id="multiAudioSeconds" value="0" min="0">
-                            </div>
-                            <div class="input-group">
-                                <label>Video Duration (seconds)</label>
-                                <input type="number" id="multiVideoSeconds" value="0" min="0">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="model-detail-section" style="margin-bottom: 20px;">
-                        <h3>Model Selection</h3>
-                        <div class="input-group">
-                            <label>Multi-Modal Model</label>
-                            <select id="multiModalModel">
-                                <option value="">Select model...</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <label>Output Tokens (in billions)</label>
-                            <input type="number" id="multiOutputTokens" value="0.0000005" min="0" step="0.0000001">
-                            <div style="font-size: 10px; color: var(--white); margin-top: 4px;">Enter tokens in billions (0.0000005 = 500 tokens)</div>
-                        </div>
-                    </div>
-                    <button class="btn btn-secondary" onclick="calculateMultiModal()" style="width: 100%; margin-top: 10px;">Calculate Multi-Modal Cost</button>
-                </div>
-                <div>
-                    <div class="calc-result" style="margin-bottom: 20px;">
-                        <div class="cost-breakdown">
-                            <h3>Cost Breakdown</h3>
-                            <div id="multiModalResults">
-                                <div class="placeholder" style="padding: 40px; text-align: center;">
-                                    <div style="font-size: 14px; margin-bottom: 8px;">Enter parameters and click Calculate</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card" style="border: 2px solid var(--white); padding: 24px;">
-                        <h3 style="margin-bottom: 16px; font-size: 12px;">Modality Costs</h3>
-                        <div id="multiModalBreakdown"></div>
-                    </div>
-                </div>
-            </div>
+            ...
         </div>
+        -->
 
         <!-- Documentation Tab -->
         <div id="documentation" class="tab-content">
             <div style="max-width: 1000px; margin: 0 auto;">
-                <div style="border: 3px solid var(--white); padding: 30px; margin-bottom: 30px; background: rgba(255, 255, 255, 0.02);">
-                    <h2 style="font-size: 20px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Documentation</h2>
-                    <p style="font-size: 12px; color: var(--white);">Complete formulas, calculations, and assumptions used in NAPIERS</p>
+                <div class="section-header">
+                    <h2>Documentation</h2>
+                    <p>Complete formulas, calculations, and assumptions used in NAPIERS</p>
                 </div>
 
                 <!-- FORMULAS Section -->
