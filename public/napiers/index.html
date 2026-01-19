@@ -49,13 +49,17 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" data-tab="calculator">Calculator</button>
+            <button class="tab-btn active" data-tab="calculator">Cost Calculator</button>
+            <button class="tab-btn" data-tab="popular-models">Latency Calculator</button>
+            <button class="tab-btn" data-tab="batch">Batch</button>
             <button class="tab-btn" data-tab="voice">Voice AI</button>
             <button class="tab-btn" data-tab="voice-guide">Voice Guide</button>
             <button class="tab-btn" data-tab="explorer">Explorer</button>
             <button class="tab-btn" data-tab="compare">Compare</button>
+            <button class="tab-btn" data-tab="optimizer">Optimizer</button>
             <button class="tab-btn" data-tab="statistics">Statistics</button>
-            <button class="tab-btn" data-tab="documentation">Docs</button>
+            <button class="tab-btn" data-tab="favorites">Favorites</button>
+            <button class="tab-btn" data-tab="documentation">Documentation</button>
         </div>
 
         <!-- Model Explorer Tab -->
@@ -348,6 +352,62 @@
                         <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Token Usage</h4>
                         <div id="tokenChart" style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--white);">
                             <div style="text-align: center;">Enter values to see chart</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Calculator Tab -->
+        <div id="batch" class="tab-content">
+            <div class="section-header">
+                <h2>Batch Calculator</h2>
+                <p>Calculate costs for multiple models or requests at once. Input a JSON array of usage scenarios to get aggregate cost analysis. Ideal for comparing multi-model workflows or projecting monthly expenses.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+                <div>
+                    <div class="model-detail-section" style="margin-bottom: 20px;">
+                        <h3>Batch Input</h3>
+                        <div class="input-group">
+                            <label>JSON Array of Requests</label>
+                            <div class="batch-input">
+                                <textarea id="batchInput" placeholder='[{"model": "openai:gpt-4o", "input": 1, "output": 0.5}, {"model": "anthropic:claude-3-5-sonnet-20241022", "input": 2, "output": 1}]'></textarea>
+                            </div>
+                            <div style="font-size: 11px; color: var(--white); margin-top: 8px;">
+                                Enter an array of objects with: model (provider:name), input (tokens in billions), output (tokens in billions)
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="calculateBatch()" style="width: 100%; margin-top: 10px;">Calculate Batch</button>
+                    </div>
+                    <div class="model-detail-section">
+                        <h3>Quick Templates</h3>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button class="btn" onclick="loadBatchTemplate('comparison')" style="text-align: left; text-transform: none;">Compare 3 Popular Models</button>
+                            <button class="btn" onclick="loadBatchTemplate('monthly')" style="text-align: left; text-transform: none;">Monthly Usage Estimate</button>
+                            <button class="btn" onclick="loadBatchTemplate('scenario')" style="text-align: left; text-transform: none;">Cost Scenario Analysis</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div id="batchResults" class="batch-results">
+                        <div class="placeholder" style="padding: 80px 20px;">
+                            <div style="font-size: 16px; margin-bottom: 12px; font-weight: 600;">No batch calculation yet</div>
+                            <div style="font-size: 12px; color: var(--white);">Enter JSON array and click Calculate Batch</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="batchCharts" style="display: none; margin-top: 40px;">
+                <div class="model-detail-section">
+                    <h3>Visualizations</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Cost Distribution</h4>
+                            <div id="batchCostChart" style="height: 300px;"></div>
+                        </div>
+                        <div style="border: 1px solid var(--white); padding: 20px;">
+                            <h4 style="font-size: 11px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase;">Model Comparison</h4>
+                            <div id="batchModelChart" style="height: 300px;"></div>
                         </div>
                     </div>
                 </div>
