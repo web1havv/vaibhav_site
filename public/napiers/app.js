@@ -5,45 +5,60 @@ let generalData = {};
 let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 let currentFilters = {};
 
-// Popular Models with real-world latency benchmarks (January 2026)
-// Data sourced from Artificial Analysis, provider benchmarks, and community testing
+// Popular Models with real-world latency benchmarks
+// Data sourced from Voice AI Guide (Pipecat community) - May 2025 benchmarks
+// ttftMin = median TTFT, ttftMax = P95 TTFT
 const POPULAR_MODELS_DATA = [
-    // OpenAI Models
+    // OpenAI Models (from Voice AI Guide - May 2025)
     { 
         provider: 'openai', 
         name: 'gpt-4o', 
         displayName: 'GPT-4o',
         outputSpeed: 180, // tokens/sec
-        ttftMin: 250, ttftMax: 400, // TTFT range in ms
+        ttftMin: 460, ttftMax: 580, // Voice AI Guide: 460ms median, 580ms P95
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true // Good for voice AI (<500ms target)
     },
     { 
         provider: 'openai', 
         name: 'gpt-4o-mini', 
         displayName: 'GPT-4o Mini',
         outputSpeed: 300,
-        ttftMin: 150, ttftMax: 250,
+        ttftMin: 290, ttftMax: 420, // Voice AI Guide: 290ms median, 420ms P95
         contextWindow: 128000,
-        tier: 'fast'
+        tier: 'fast',
+        voiceAIReady: true
+    },
+    { 
+        provider: 'openai', 
+        name: 'gpt-4.1', 
+        displayName: 'GPT-4.1',
+        outputSpeed: 150,
+        ttftMin: 450, ttftMax: 670, // Voice AI Guide: 450ms median, 670ms P95
+        contextWindow: 128000,
+        tier: 'flagship',
+        voiceAIReady: true
     },
     { 
         provider: 'openai', 
         name: 'gpt-4-turbo', 
         displayName: 'GPT-4 Turbo',
         outputSpeed: 120,
-        ttftMin: 300, ttftMax: 500,
+        ttftMin: 500, ttftMax: 700,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     { 
         provider: 'openai', 
         name: 'o1', 
         displayName: 'o1 (Reasoning)',
         outputSpeed: 50,
-        ttftMin: 2000, ttftMax: 10000,
+        ttftMin: 2000, ttftMax: 10000, // Reasoning models are too slow for voice
         contextWindow: 200000,
-        tier: 'reasoning'
+        tier: 'reasoning',
+        voiceAIReady: false
     },
     { 
         provider: 'openai', 
@@ -52,94 +67,168 @@ const POPULAR_MODELS_DATA = [
         outputSpeed: 80,
         ttftMin: 1000, ttftMax: 5000,
         contextWindow: 128000,
-        tier: 'reasoning'
+        tier: 'reasoning',
+        voiceAIReady: false
     },
     
-    // Anthropic Models
+    // Anthropic Models - WARNING: Claude is too slow for voice AI!
     { 
         provider: 'anthropic', 
         name: 'claude-3-5-sonnet-20241022', 
         displayName: 'Claude 3.5 Sonnet',
         outputSpeed: 170,
-        ttftMin: 300, ttftMax: 450,
+        ttftMin: 1410, ttftMax: 2140, // Voice AI Guide: 1,410ms median, 2,140ms P95 - TOO SLOW!
         contextWindow: 200000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: false // Not recommended for voice AI due to high latency
+    },
+    { 
+        provider: 'anthropic', 
+        name: 'claude-3-7-sonnet', 
+        displayName: 'Claude 3.7 Sonnet',
+        outputSpeed: 170,
+        ttftMin: 1410, ttftMax: 2140, // Voice AI Guide: Claude Sonnet 3.7 has 1,410ms median TTFT
+        contextWindow: 200000,
+        tier: 'flagship',
+        voiceAIReady: false // Not recommended for voice AI
     },
     { 
         provider: 'anthropic', 
         name: 'claude-3-5-haiku-20241022', 
         displayName: 'Claude 3.5 Haiku',
         outputSpeed: 280,
-        ttftMin: 150, ttftMax: 250,
+        ttftMin: 600, ttftMax: 900, // Haiku is faster but still not ideal
         contextWindow: 200000,
-        tier: 'fast'
+        tier: 'fast',
+        voiceAIReady: false
     },
     { 
         provider: 'anthropic', 
         name: 'claude-3-opus-20240229', 
         displayName: 'Claude 3 Opus',
         outputSpeed: 90,
-        ttftMin: 500, ttftMax: 800,
+        ttftMin: 1800, ttftMax: 3000, // Opus is even slower
         contextWindow: 200000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: false
     },
     
-    // Google Models
+    // Google Models (from Voice AI Guide)
+    { 
+        provider: 'google', 
+        name: 'gemini-2.0-flash', 
+        displayName: 'Gemini 2.0 Flash',
+        outputSpeed: 400,
+        ttftMin: 380, ttftMax: 450, // Voice AI Guide: 380ms median, 450ms P95
+        contextWindow: 1000000,
+        tier: 'fast',
+        voiceAIReady: true // Excellent for voice AI - fast and cheap!
+    },
+    { 
+        provider: 'google', 
+        name: 'gemini-2.0-flash-exp', 
+        displayName: 'Gemini 2.0 Flash (Exp)',
+        outputSpeed: 400,
+        ttftMin: 380, ttftMax: 450, // Same as 2.0 Flash
+        contextWindow: 1000000,
+        tier: 'fast',
+        voiceAIReady: true
+    },
     { 
         provider: 'google', 
         name: 'gemini-1.5-pro', 
         displayName: 'Gemini 1.5 Pro',
         outputSpeed: 160,
-        ttftMin: 250, ttftMax: 400,
+        ttftMin: 400, ttftMax: 550,
         contextWindow: 2000000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     { 
         provider: 'google', 
         name: 'gemini-1.5-flash', 
         displayName: 'Gemini 1.5 Flash',
         outputSpeed: 250,
-        ttftMin: 150, ttftMax: 250,
+        ttftMin: 350, ttftMax: 450,
         contextWindow: 1000000,
-        tier: 'fast'
-    },
-    { 
-        provider: 'google', 
-        name: 'gemini-2.0-flash-exp', 
-        displayName: 'Gemini 2.0 Flash',
-        outputSpeed: 400,
-        ttftMin: 100, ttftMax: 200,
-        contextWindow: 1000000,
-        tier: 'fast'
+        tier: 'fast',
+        voiceAIReady: true
     },
     
-    // Meta/Llama Models (via various providers)
+    // Meta/Llama Models via Groq (from Voice AI Guide)
+    { 
+        provider: 'groq', 
+        name: 'llama-4-maverick', 
+        displayName: 'Llama 4 Maverick (Groq)',
+        outputSpeed: 500,
+        ttftMin: 290, ttftMax: 360, // Voice AI Guide: 290ms median, 360ms P95
+        contextWindow: 128000,
+        tier: 'ultra-fast',
+        voiceAIReady: true // Excellent for voice AI
+    },
+    { 
+        provider: 'groq', 
+        name: 'llama-3.1-70b-versatile', 
+        displayName: 'Groq Llama 3.1 70B',
+        outputSpeed: 500,
+        ttftMin: 100, ttftMax: 200, // Groq is exceptionally fast
+        contextWindow: 128000,
+        tier: 'ultra-fast',
+        voiceAIReady: true
+    },
+    { 
+        provider: 'groq', 
+        name: 'llama-3.3-70b-versatile', 
+        displayName: 'Groq Llama 3.3 70B',
+        outputSpeed: 500,
+        ttftMin: 100, ttftMax: 200,
+        contextWindow: 128000,
+        tier: 'ultra-fast',
+        voiceAIReady: true
+    },
+    
+    // Together AI
     { 
         provider: 'together-ai', 
         name: 'meta-llama/Llama-3.1-8B-Instruct-Turbo', 
         displayName: 'Llama 3.1 8B',
         outputSpeed: 450,
-        ttftMin: 100, ttftMax: 150,
+        ttftMin: 150, ttftMax: 250,
         contextWindow: 128000,
-        tier: 'fast'
+        tier: 'fast',
+        voiceAIReady: true
     },
     { 
         provider: 'together-ai', 
         name: 'meta-llama/Llama-3.1-70B-Instruct-Turbo', 
         displayName: 'Llama 3.1 70B',
         outputSpeed: 100,
-        ttftMin: 250, ttftMax: 400,
+        ttftMin: 300, ttftMax: 450,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     { 
         provider: 'together-ai', 
         name: 'meta-llama/Llama-3.1-405B-Instruct-Turbo', 
         displayName: 'Llama 3.1 405B',
         outputSpeed: 70,
-        ttftMin: 500, ttftMax: 700,
+        ttftMin: 600, ttftMax: 900,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: false // Too slow for voice
+    },
+    
+    // Cerebras (ultra-fast inference)
+    { 
+        provider: 'cerebras', 
+        name: 'llama3.1-70b', 
+        displayName: 'Cerebras Llama 3.1 70B',
+        outputSpeed: 600,
+        ttftMin: 80, ttftMax: 150,
+        contextWindow: 128000,
+        tier: 'ultra-fast',
+        voiceAIReady: true
     },
     
     // Mistral Models
@@ -148,27 +237,20 @@ const POPULAR_MODELS_DATA = [
         name: 'mistral-large-latest', 
         displayName: 'Mistral Large',
         outputSpeed: 150,
-        ttftMin: 250, ttftMax: 400,
+        ttftMin: 350, ttftMax: 500,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     { 
         provider: 'mistral-ai', 
         name: 'mistral-small-latest', 
         displayName: 'Mistral Small',
         outputSpeed: 280,
-        ttftMin: 150, ttftMax: 250,
-        contextWindow: 32000,
-        tier: 'fast'
-    },
-    { 
-        provider: 'mistral-ai', 
-        name: 'open-mixtral-8x22b', 
-        displayName: 'Mixtral 8x22B',
-        outputSpeed: 120,
         ttftMin: 200, ttftMax: 350,
-        contextWindow: 64000,
-        tier: 'flagship'
+        contextWindow: 32000,
+        tier: 'fast',
+        voiceAIReady: true
     },
     
     // DeepSeek
@@ -177,29 +259,10 @@ const POPULAR_MODELS_DATA = [
         name: 'deepseek-chat', 
         displayName: 'DeepSeek V3',
         outputSpeed: 200,
-        ttftMin: 200, ttftMax: 350,
+        ttftMin: 300, ttftMax: 500,
         contextWindow: 64000,
-        tier: 'flagship'
-    },
-    
-    // Fast Inference Providers
-    { 
-        provider: 'groq', 
-        name: 'llama-3.1-70b-versatile', 
-        displayName: 'Groq Llama 3.1 70B',
-        outputSpeed: 500,
-        ttftMin: 50, ttftMax: 100,
-        contextWindow: 128000,
-        tier: 'ultra-fast'
-    },
-    { 
-        provider: 'cerebras', 
-        name: 'llama3.1-70b', 
-        displayName: 'Cerebras Llama 3.1 70B',
-        outputSpeed: 600,
-        ttftMin: 50, ttftMax: 100,
-        contextWindow: 128000,
-        tier: 'ultra-fast'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     
     // Cohere
@@ -208,9 +271,10 @@ const POPULAR_MODELS_DATA = [
         name: 'command-r-plus', 
         displayName: 'Command R+',
         outputSpeed: 120,
-        ttftMin: 300, ttftMax: 500,
+        ttftMin: 400, ttftMax: 600,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     },
     
     // Perplexity
@@ -219,9 +283,10 @@ const POPULAR_MODELS_DATA = [
         name: 'llama-3.1-sonar-large-128k-online', 
         displayName: 'Perplexity Sonar Large',
         outputSpeed: 180,
-        ttftMin: 250, ttftMax: 400,
+        ttftMin: 350, ttftMax: 500,
         contextWindow: 128000,
-        tier: 'flagship'
+        tier: 'flagship',
+        voiceAIReady: true
     }
 ];
 
@@ -301,7 +366,7 @@ async function fetchWithFallback(localFile, timeout = 5000) {
     try {
         // Try remote source (GitHub raw URL) first
         const data = await fetchFile(remotePath, timeout);
-        console.log(`✓ Loaded from remote: ${remotePath}`);
+        console.log(`Loaded from remote: ${remotePath}`);
         return { data, source: 'remote' };
     } catch (remoteError) {
         // Remote failed, fall back to local file
@@ -325,7 +390,7 @@ async function fetchModelFromAPI(provider, modelName, type = 'pricing') {
             : `${PORTKEY_API_BASE}/model-configs/general/${provider}/${modelName}`;
         
         const data = await fetchFile(endpoint, API_TIMEOUT);
-        console.log(`✓ Fetched ${type} for ${provider}:${modelName} from Portkey API`);
+        console.log(`Fetched ${type} for ${provider}:${modelName} from Portkey API`);
         return data;
     } catch (error) {
         console.log(`Portkey API fetch failed for ${provider}:${modelName} (${type}):`, error.message);
@@ -411,8 +476,8 @@ async function loadData() {
         
         const pricingCount = Object.keys(pricingData).length;
         const generalCount = Object.keys(generalData).length;
-        console.log(`✓ Loaded ${pricingCount} pricing files and ${generalCount} general files`);
-        console.log(`✓ Total models available: ${allModels.length}`);
+        console.log(`Loaded ${pricingCount} pricing files and ${generalCount} general files`);
+        console.log(`Total models available: ${allModels.length}`);
         
         if (allModels.length === 0) {
             document.getElementById('modelsGrid').innerHTML = 
@@ -630,11 +695,19 @@ function populateVoiceAIProviders() {
         { provider: 'azure-openai', name: 'gpt-4o-transcribe', label: 'GPT-4o-Transcribe (Azure) - $0.60/1K audio tokens' },
         { provider: 'azure-openai', name: 'gpt-4o-mini-transcribe', label: 'GPT-4o-mini-Transcribe (Azure) - $0.30/1K audio tokens' },
         { provider: 'azure-openai', name: 'whisper-1', label: 'Whisper-1 (Azure) - $0.60/1K audio tokens' },
-        // Manual entries with 2026 pricing (will use manual pricing)
-        { provider: 'manual', name: 'whisper-v3', label: 'Whisper V3 (OpenAI 2026) - $0.006/min' },
-        { provider: 'manual', name: 'deepgram-nova-3', label: 'Deepgram Nova-3 (2026) - $0.0077/min (EN)' },
-        { provider: 'manual', name: 'deepgram-nova-3-multilingual', label: 'Deepgram Nova-3 Multilingual (2026) - $0.0092/min' },
-        { provider: 'manual', name: 'google-chirp-2', label: 'Google Speech-to-Text Chirp 2 (2026) - $0.012/min' }
+        // Manual entries with Voice AI Guide pricing (2025)
+        // Deepgram - Industry leader for Voice AI (recommended)
+        { provider: 'manual', name: 'deepgram-nova-2', label: 'Deepgram Nova-2 - $0.0043/min (BEST)' },
+        { provider: 'manual', name: 'deepgram-nova-2-phonecall', label: 'Deepgram Nova-2 Phonecall - $0.0050/min' },
+        // Gladia - Best for multilingual
+        { provider: 'manual', name: 'gladia-enhanced', label: 'Gladia Enhanced (Multilingual) - $0.0066/min' },
+        // Whisper variants
+        { provider: 'manual', name: 'whisper-v3', label: 'Whisper V3 (OpenAI) - $0.006/min' },
+        { provider: 'manual', name: 'groq-whisper', label: 'Groq Whisper Large v3 - $0.003/min (fast)' },
+        // AssemblyAI
+        { provider: 'manual', name: 'assemblyai-best', label: 'AssemblyAI Best - $0.008/min' },
+        // Google
+        { provider: 'manual', name: 'google-chirp-2', label: 'Google Speech-to-Text Chirp 2 - $0.012/min' }
     ];
     
     sttModels.forEach(model => {
@@ -666,11 +739,21 @@ function populateVoiceAIProviders() {
         { provider: 'azure-openai', name: 'tts-1-hd', label: 'TTS-1-HD (Azure) - $30/1B chars' },
         { provider: 'azure-openai', name: 'tts', label: 'TTS (Azure) - $15/1B chars' },
         { provider: 'azure-openai', name: 'tts-hd', label: 'TTS-HD (Azure) - $30/1B chars' },
-        // Manual entries with 2026 pricing
-        { provider: 'manual', name: 'elevenlabs-flash-v2.5', label: 'ElevenLabs Flash v2.5 (2026) - $0.000075/char' },
-        { provider: 'manual', name: 'cartesia-sonic', label: 'Cartesia Sonic (2026) - $0.03/min' },
-        { provider: 'manual', name: 'google-tts-standard', label: 'Google TTS Standard (2026) - $4/1B chars' },
-        { provider: 'manual', name: 'google-tts-wavenet', label: 'Google TTS WaveNet (2026) - $16/1B chars' }
+        // Manual entries with Voice AI Guide pricing (2025)
+        // Deepgram Aura - CHEAPEST for Voice AI
+        { provider: 'manual', name: 'deepgram-aura', label: 'Deepgram Aura - $0.008/min (CHEAPEST)' },
+        // Cartesia - Recommended for Voice AI (SSM architecture)
+        { provider: 'manual', name: 'cartesia-sonic', label: 'Cartesia Sonic - $0.02/min (RECOMMENDED)' },
+        // ElevenLabs - High quality voices
+        { provider: 'manual', name: 'elevenlabs-flash-v2', label: 'ElevenLabs Flash v2 - $0.04/min' },
+        { provider: 'manual', name: 'elevenlabs-turbo-v2', label: 'ElevenLabs Turbo v2 - $0.08/min' },
+        // Rime - Conversational speech
+        { provider: 'manual', name: 'rime-conversational', label: 'Rime Conversational - $0.04/min' },
+        // PlayHT
+        { provider: 'manual', name: 'playht-turbo', label: 'PlayHT 2.0 Turbo - $0.05/min' },
+        // Google
+        { provider: 'manual', name: 'google-tts-standard', label: 'Google TTS Standard - $4/1B chars' },
+        { provider: 'manual', name: 'google-tts-wavenet', label: 'Google TTS WaveNet - $16/1B chars' }
     ];
     
     ttsModels.forEach(model => {
@@ -2734,12 +2817,20 @@ function calculateVoiceAI() {
     if (sttProvider) {
         const [sttProv, sttModel] = sttProvider.split(':');
         
-        // Handle manual models with 2026 pricing
+        // Handle manual models with Voice AI Guide pricing (2025)
         if (sttProv === 'manual') {
             const manualPricing = {
+                // Deepgram - Industry leader for Voice AI
+                'deepgram-nova-2': 0.0043, // $0.0043/min - BEST VALUE
+                'deepgram-nova-2-phonecall': 0.0050, // $0.005/min
+                // Gladia - Best for multilingual
+                'gladia-enhanced': 0.0066, // $0.0066/min
+                // Whisper variants
                 'whisper-v3': 0.006, // $0.006/min
-                'deepgram-nova-3': 0.0077, // $0.0077/min
-                'deepgram-nova-3-multilingual': 0.0092, // $0.0092/min
+                'groq-whisper': 0.003, // $0.003/min (faster)
+                // AssemblyAI
+                'assemblyai-best': 0.008, // $0.008/min
+                // Google
                 'google-chirp-2': 0.012 // $0.012/min
             };
             
@@ -2780,13 +2871,24 @@ function calculateVoiceAI() {
     if (ttsProvider) {
         const [ttsProv, ttsModel] = ttsProvider.split(':');
         
-        // Handle manual models with 2026 pricing
+        // Handle manual models with Voice AI Guide pricing (2025)
+        // TTS pricing converted to $/char (avg 600 chars/min for conversational speech)
         if (ttsProv === 'manual') {
             const manualPricing = {
-                'elevenlabs-flash-v2.5': 0.000075, // $0.000075/char
-                'cartesia-sonic': 0.00005, // $0.03/min ≈ $0.00005/char (600 chars/min avg)
-                'google-tts-standard': 0.000004, // $4/1B chars = $0.000004/char
-                'google-tts-wavenet': 0.000016 // $16/1B chars = $0.000016/char
+                // Deepgram Aura - CHEAPEST
+                'deepgram-aura': 0.0000133, // $0.008/min ÷ 600 chars/min
+                // Cartesia Sonic - RECOMMENDED for Voice AI
+                'cartesia-sonic': 0.0000333, // $0.02/min ÷ 600 chars/min
+                // ElevenLabs
+                'elevenlabs-flash-v2': 0.0000666, // $0.04/min ÷ 600 chars/min
+                'elevenlabs-turbo-v2': 0.000133, // $0.08/min ÷ 600 chars/min
+                // Rime
+                'rime-conversational': 0.0000666, // $0.04/min ÷ 600 chars/min
+                // PlayHT
+                'playht-turbo': 0.0000833, // $0.05/min ÷ 600 chars/min
+                // Google
+                'google-tts-standard': 0.000004, // $4/1B chars
+                'google-tts-wavenet': 0.000016 // $16/1B chars
             };
             
             const calculatedCostPerChar = manualPricing[ttsModel] || 0.000015;
@@ -2952,34 +3054,47 @@ function calculateLatency() {
         }
         
         // Model-specific latency estimates (in milliseconds)
-        // NOTE: These are HARDCODED ESTIMATES, not from model data files
-        // The model files (models/pricing/ and models/general/) do NOT contain latency data
-        // These values are based on typical real-time factors and known model performance characteristics
-        // TODO: Consider adding latency data to model files or fetching from external benchmarks
-        // 2026 STT latencies - significantly improved
+        // NOTE: These are based on real-world data from the Voice AI Guide (2025)
+        // Source: https://github.com/pipecat-ai/pipecat Voice AI Primer
+        // STT TTFT (Time to First Token) latencies
         const sttLatencies = {
-            // OpenAI models (2026)
-            'whisper-1': 300,
-            'whisper-v3': 280,
-            'whisper-large-v3': 320,
-            'gpt-4o-transcribe': 150, // Much faster in 2026
-            'gpt-4o-mini-transcribe': 120, // Fastest OpenAI option
-            'gpt-4o-transcribe-diarize': 180, // With speaker identification
-            // Deepgram models (2026 - industry leader in speed)
-            'deepgram-nova-3': 100, // Real-time optimized
-            'deepgram-nova-3-multilingual': 130,
-            'deepgram-nova-2': 120,
-            // Google models (2026)
-            'google-chirp-2': 180,
-            'google-chirp-3': 140, // Newer model
-            // AssemblyAI (2026)
-            'assemblyai-universal': 150,
-            // Provider-based fallbacks
-            'openai': 200,
-            'azure-openai': 200,
-            'deepgram': 100,
-            'google': 160,
-            'assemblyai': 150
+            // Deepgram (Recommended for Voice AI - fastest)
+            'nova-2': 150, // Deepgram Nova-2: ~150ms TTFT for US users
+            'deepgram-nova-2': 150,
+            'nova-2-general': 150,
+            // Gladia (Best for multilingual)
+            'enhanced': 200, // Gladia Enhanced: ~200ms
+            'gladia-enhanced': 200,
+            // OpenAI models
+            'whisper-1': 400, // Whisper has ~400ms TTFT
+            'whisper-large-v3': 450,
+            'whisper-large-v3-turbo': 300, // Groq's faster version
+            'gpt-4o-transcribe': 250, // Newer OpenAI STT
+            'gpt-4o-mini-transcribe': 200,
+            // Google
+            'speech': 300, // Google Cloud Speech-to-Text
+            // AWS
+            'transcribe': 350, // Amazon Transcribe
+            // AssemblyAI
+            'assemblyai-universal': 280,
+            // Manual model latencies (Voice AI Guide)
+            'deepgram-nova-2': 150,
+            'deepgram-nova-2-phonecall': 150,
+            'gladia-enhanced': 200,
+            'whisper-v3': 400,
+            'groq-whisper': 300,
+            'assemblyai-best': 280,
+            'google-chirp-2': 300,
+            // Provider-based fallbacks (from Voice AI Guide)
+            'deepgram': 150, // Best: ~150ms
+            'gladia': 200,
+            'openai': 400, // Whisper ~400ms
+            'groq': 300, // Groq Whisper ~300ms
+            'azure': 300,
+            'google': 300,
+            'aws': 350,
+            'assemblyai': 280,
+            'manual': 200 // Default for manual
         };
         
         // Try model name first, then provider, then default
@@ -3028,37 +3143,52 @@ function calculateLatency() {
         }
         
         // Model-specific latency estimates (in milliseconds)
-        // NOTE: These are HARDCODED ESTIMATES, not from model data files
-        // The model files (models/pricing/ and models/general/) do NOT contain latency data
-        // These values are based on typical TTS generation times and known model performance
-        // TODO: Consider adding latency data to model files or fetching from external benchmarks
-        // 2026 TTS latencies - much faster with new models
+        // NOTE: These are based on real-world data from the Voice AI Guide (2025)
+        // Source: https://github.com/pipecat-ai/pipecat Voice AI Primer
+        // TTS TTFB (Time to First Byte) latencies - February 2025 benchmarks
         const ttsLatencies = {
-            // OpenAI models (2026)
-            'tts-1': 100,
-            'tts-1-hd': 140,
-            'gpt-4o-mini-tts': 60, // Very fast
-            'gpt-4o-tts': 80,
-            // ElevenLabs (2026 - industry leader)
-            'elevenlabs-flash-v2.5': 50, // Ultra-low latency
-            'elevenlabs-turbo-v2.5': 40, // Fastest available
-            'elevenlabs-multilingual-v2': 70,
-            // Cartesia (2026)
-            'cartesia-sonic': 55,
-            'cartesia-sonic-2': 45,
-            // Google (2026)
-            'google-tts-standard': 90,
-            'google-tts-wavenet': 120,
-            'google-tts-neural2': 80,
-            // PlayHT (2026)
-            'playht-turbo': 60,
-            // Provider-based fallbacks
-            'openai': 100,
-            'azure-openai': 100,
-            'google': 90,
-            'elevenlabs': 50,
-            'cartesia': 50,
-            'playht': 60
+            // Cartesia (Recommended - SSM architecture, low latency)
+            'sonic': 190, // Cartesia Sonic: 190ms median, 260ms P95
+            'cartesia-sonic': 190,
+            // Deepgram Aura (Cheapest and fast)
+            'aura': 150, // Deepgram Aura: 150ms median, 320ms P95
+            'deepgram-aura': 150,
+            // ElevenLabs
+            'flash-v2': 170, // ElevenLabs Flash v2: 170ms median, 190ms P95
+            'turbo-v2': 300, // ElevenLabs Turbo v2: 300ms median, 510ms P95
+            'elevenlabs-flash-v2': 170,
+            'elevenlabs-turbo-v2': 300,
+            // Rime (Conversational speech models)
+            'conversational': 340, // Rime: 340ms median, 980ms P95
+            'rime-conversational': 340,
+            // OpenAI TTS
+            'tts-1': 200, // OpenAI TTS-1
+            'tts-1-hd': 250, // Higher quality, slightly slower
+            'gpt-4o-mini-tts': 150, // Steerable TTS
+            // Google
+            'wavenet': 200, // Google WaveNet
+            'neural': 180, // Google Neural TTS
+            // AWS
+            'polly': 180, // Amazon Polly
+            // Manual model latencies (Voice AI Guide)
+            'deepgram-aura': 150,
+            'cartesia-sonic': 190,
+            'elevenlabs-flash-v2': 170,
+            'elevenlabs-turbo-v2': 300,
+            'rime-conversational': 340,
+            'playht-turbo': 250,
+            'google-tts-standard': 200,
+            'google-tts-wavenet': 200,
+            // Provider-based fallbacks (from Voice AI Guide)
+            'cartesia': 190, // Best balance: 190ms
+            'deepgram': 150, // Fastest: 150ms
+            'elevenlabs': 170, // Flash v2: 170ms
+            'rime': 340,
+            'openai': 200,
+            'google': 200,
+            'azure': 200,
+            'aws': 180,
+            'manual': 190 // Default for manual
         };
         
         // Try model name first, then provider, then default
@@ -3246,7 +3376,7 @@ function populatePopularModels() {
             const exists = allModels.find(m => m.provider === model.provider && m.name === model.name);
             const option = document.createElement('option');
             option.value = `${model.provider}:${model.name}`;
-            option.textContent = model.displayName + (exists ? '' : ' ⚠️');
+            option.textContent = model.displayName + (exists ? '' : ' (N/A)');
             // Don't disable - allow selection even without pricing data
             optgroup.appendChild(option);
         });
