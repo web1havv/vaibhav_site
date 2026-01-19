@@ -309,7 +309,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderFavorites();
     setTimeout(() => {
         updateVoiceLLMPricing();
-        calculateVoiceAI();
         calculatePopularModel();
     }, 500);
 });
@@ -557,7 +556,8 @@ function setupTabs() {
             } else if (targetTab === 'favorites') {
                 renderFavorites();
             } else if (targetTab === 'voice') {
-                calculateVoiceAI();
+                showVoiceSection('calculator');
+                updateURL('voice', 'calculator');
             } else if (targetTab === 'calculator') {
                 calculateCost();
             } else if (targetTab === 'chat-agent') {
@@ -629,7 +629,6 @@ function setupEventListeners() {
         if (el) {
             el.addEventListener('change', () => {
                 updateVoiceLLMPricing();
-                calculateVoiceAI();
             });
         }
     });

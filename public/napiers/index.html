@@ -53,7 +53,6 @@
             <button class="tab-btn" data-tab="popular-models">Latency Calculator</button>
             <button class="tab-btn" data-tab="batch">Batch</button>
             <button class="tab-btn" data-tab="voice">Voice AI</button>
-            <button class="tab-btn" data-tab="voice-guide">Voice Guide</button>
             <button class="tab-btn" data-tab="explorer">Explorer</button>
             <button class="tab-btn" data-tab="compare">Compare</button>
             <button class="tab-btn" data-tab="optimizer">Optimizer</button>
@@ -655,7 +654,20 @@
         <!-- Voice AI Calculator Tab -->
         <div id="voice" class="tab-content">
             <div class="section-header">
-                <h2>Voice AI Calculator</h2>
+                <h2>Voice AI</h2>
+                <p>Calculate costs and learn about building voice AI applications.</p>
+            </div>
+            
+            <!-- Sub-tabs for Voice AI -->
+            <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px;">
+                <button class="btn btn-secondary" onclick="showVoiceSection('calculator')" id="voice-calc-btn" style="font-size: 10px; padding: 8px 16px;">Calculator</button>
+                <button class="btn" onclick="showVoiceSection('guide')" id="voice-guide-btn" style="font-size: 10px; padding: 8px 16px;">Guide</button>
+            </div>
+            
+            <!-- Voice Calculator Section -->
+            <div id="voice-calc-section">
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h3>Voice AI Calculator</h3>
                 <p>Calculate end-to-end costs for voice AI applications. Includes Speech-to-Text (STT), LLM processing, Text-to-Speech (TTS), and infrastructure costs. Get complete latency breakdowns for real-time voice experiences.</p>
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
@@ -917,10 +929,10 @@
                         </div>
                         </div>
             </div>
-        </div>
-
-        <!-- Voice AI Guide Tab - Comprehensive Educational Content -->
-        <div id="voice-guide" class="tab-content">
+            </div><!-- End voice-calc-section -->
+            
+            <!-- Voice Guide Section (hidden by default) -->
+            <div id="voice-guide-section" style="display: none;">
             <div style="max-width: 1200px; margin: 0 auto;">
                 <div class="section-header" style="text-align: center;">
                     <h2>Voice AI & Voice Agents: An Illustrated Primer</h2>
@@ -1508,7 +1520,8 @@
                     <p style="margin-top: 8px;">Available under CC0 license. <a href="https://github.com/pipecat-ai/pipecat" style="color: var(--gray-500);">github.com/pipecat-ai/pipecat</a></p>
                 </div>
             </div>
-        </div>
+            </div><!-- End voice-guide-section -->
+        </div><!-- End voice tab -->
 
         <!-- Chat Agent Calculator Tab - COMMENTED OUT
         <div id="chat-agent" class="tab-content">
